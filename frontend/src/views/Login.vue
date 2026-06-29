@@ -305,42 +305,52 @@
               </button>
             </form>
 
-            <!-- Register link -->
-            <p class="login-link">
-              {{ t('login.noAccount') }} <router-link to="/register" class="login-link-text">{{ t('login.createAccount') }}</router-link>
-            </p>
-
-            <!-- Divider -->
-            <div class="divider">
-              <span class="divider-line"></span>
-              <span class="divider-text">{{ t('login.orContinueWith') }}</span>
-              <span class="divider-line"></span>
+            <!-- Create Account Section -->
+            <div class="create-account">
+              <span class="create-account-text">{{ t('login.noAccount') }}</span>
+              <router-link to="/register" class="create-account-link">{{ t('login.createAccount') }}</router-link>
             </div>
 
-            <!-- Social buttons -->
-            <div class="social-buttons">
-              <button type="button" class="social-btn social-btn--google">
-                <svg viewBox="0 0 24 24" width="20" height="20">
-                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                </svg>
-                <span>{{ t('login.google') }}</span>
-              </button>
-              <button type="button" class="social-btn social-btn--facebook">
-                <svg viewBox="0 0 24 24" width="20" height="20">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2"/>
-                </svg>
-                <span>{{ t('login.facebook') }}</span>
-              </button>
+            <!-- Social Login Section (Divider + Buttons) -->
+            <div class="social-login">
+              <div class="social-divider" aria-hidden="true">
+                <span class="social-divider-line">────</span>
+                <span class="social-divider-text">{{ t('login.orContinueWith') }}</span>
+                <span class="social-divider-line">────</span>
+              </div>
+
+              <div class="social-buttons">
+                <button type="button" class="social-btn social-btn--google">
+                  <span class="social-btn-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                  </span>
+                  <span class="social-btn-text">{{ t('login.google') }}</span>
+                </button>
+
+                <button type="button" class="social-btn social-btn--facebook">
+                  <span class="social-btn-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2"/>
+                    </svg>
+                  </span>
+                  <span class="social-btn-text">{{ t('login.facebook') }}</span>
+                </button>
+              </div>
             </div>
 
-            <!-- Footer links -->
+            <!-- Terms Section (bottom) -->
             <div class="signup-footer">
-              <a href="#" class="footer-link">{{ t('login.termsOfService') }}</a>
-              <span class="footer-dot">·</span>
-              <a href="#" class="footer-link">{{ t('login.privacyPolicy') }}</a>
+              <div class="signup-terms">
+                <span class="signup-terms-muted">By signing in, you agree to our</span>
+                <router-link to="/terms" class="signup-terms-link">{{ t('login.termsOfService') }}</router-link>
+                <span class="signup-terms-muted">and</span>
+                <router-link to="/privacy" class="signup-terms-link">{{ t('login.privacyPolicy') }}</router-link>
+              </div>
             </div>
 
           </div>
@@ -999,5 +1009,210 @@ export default {
   box-shadow: 0 8px 28px rgba(106, 154, 116, 0.4);
 }
 
-/* ... rest of styles remain unchanged ... */
+/* ============================================
+   PREMIUM AUTH SECTION STYLING (UI only)
+   ============================================ */
+
+.create-account {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 20px;
+  margin-bottom: 18px;
+}
+
+.create-account-text {
+  font-size: 13px;
+  color: #8a7a7a;
+  font-weight: 500;
+}
+
+.create-account-link {
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  background: linear-gradient(135deg, #8ab894 0%, #6a9a74 50%, #7aad84 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: transform 0.25s ease, filter 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.create-account-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(138,184,148,0.0), rgba(138,184,148,0.55), rgba(106,154,116,0.0));
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.create-account-link:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 8px 18px rgba(106, 154, 116, 0.25));
+}
+
+.create-account-link:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.social-login {
+  margin-top: 12px;
+  margin-bottom: 16px;
+}
+
+.social-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 10px 0 16px;
+}
+
+.social-divider-line {
+  letter-spacing: 4px;
+  color: rgba(122, 158, 126, 0.55);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.social-divider-text {
+  font-size: 12px;
+  color: rgba(138, 122, 122, 0.9);
+  font-weight: 600;
+  text-transform: none;
+}
+
+.social-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.social-btn {
+  flex: 1;
+  min-height: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(200, 190, 180, 0.25);
+  background: rgba(255, 255, 255, 0.55);
+  color: #3d3d3d;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.social-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(168, 213, 186, 0.25), 0 10px 22px rgba(0, 0, 0, 0.06);
+}
+
+.social-btn-icon,
+.social-btn-text {
+  position: relative;
+}
+
+.social-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-btn--google:hover,
+.social-btn--facebook:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(106, 154, 116, 0.22);
+  border-color: rgba(168, 213, 186, 0.55);
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.social-btn--google:hover {
+  filter: saturate(1.05);
+}
+
+.social-btn--facebook:hover {
+  filter: saturate(1.03);
+}
+
+.signup-footer {
+  margin-top: 16px;
+}
+
+.signup-terms {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.signup-terms-muted {
+  font-size: 12px;
+  color: rgba(138, 122, 122, 0.85);
+  font-weight: 500;
+}
+
+.signup-terms-link {
+  font-size: 12px;
+  color: rgba(122, 158, 126, 0.95);
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease, transform 0.2s ease;
+}
+
+.signup-terms-link:hover {
+  color: rgba(106, 154, 116, 1);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 0 18px;
+  }
+
+  .signup-card {
+    padding: 30px 20px;
+  }
+
+  .social-buttons {
+    flex-direction: column;
+  }
+
+  .social-btn {
+    width: 100%;
+    height: 50px;
+    min-height: 50px;
+  }
+
+  .create-account {
+    margin-top: 16px;
+    margin-bottom: 14px;
+  }
+
+  .social-divider {
+    margin-bottom: 12px;
+  }
+}
+
 </style>
