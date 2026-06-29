@@ -47,16 +47,16 @@
           </button>
 
           <!-- Language Switcher -->
-          <div class="nav-dropdown lang-switcher">
-            <button class="nav-btn nav-btn--icon" @click="isLangOpen = !isLangOpen" @blur="onLangBlur" :title="t('nav.language')">
+          <div class="nav-dropdown lang-switcher" ref="langDropdownContainer">
+            <button class="nav-btn nav-btn--icon" @click="isLangOpen = !isLangOpen" :title="t('nav.language')">
               <i class="fas fa-globe"></i>
               <span class="lang-label">{{ currentLocale === 'kh' ? 'KH' : 'EN' }}</span>
             </button>
             <div class="dropdown-menu lang-menu" :class="{ show: isLangOpen }">
-              <button class="dropdown-item" :class="{ active: currentLocale === 'en' }" @click="switchLang('en')">
+              <button class="dropdown-item" :class="{ active: currentLocale === 'en' }" @mousedown.prevent="switchLang('en')">
                 <span class="lang-flag">🇬🇧</span> English
               </button>
-              <button class="dropdown-item" :class="{ active: currentLocale === 'kh' }" @click="switchLang('kh')">
+              <button class="dropdown-item" :class="{ active: currentLocale === 'kh' }" @mousedown.prevent="switchLang('kh')">
                 <span class="lang-flag">🇰🇭</span> ភាសាខ្មែរ
               </button>
             </div>
@@ -204,15 +204,13 @@ export default {
 
     onClickOutside(event) {
       const container = this.$refs.dropdownContainer
+      const langContainer = this.$refs.langDropdownContainer
       if (container && !container.contains(event.target)) {
         this.isDropdownOpen = false
       }
-    },
-
-    onLangBlur() {
-      setTimeout(() => {
+      if (langContainer && !langContainer.contains(event.target)) {
         this.isLangOpen = false
-      }, 150)
+      }
     },
 
     switchLang(lang) {

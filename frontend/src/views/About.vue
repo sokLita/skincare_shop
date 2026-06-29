@@ -13,11 +13,10 @@
       <div class="container">
         <div class="hero-layout">
           <div class="hero-text-col">
-            <span class="hero-tag">Get to Know Us</span>
-            <h1 class="hero-title">About Us</h1>
+            <span class="hero-tag">{{ t('about.heroTag') }}</span>
+            <h1 class="hero-title">{{ t('about.heroTitle') }}</h1>
             <p class="hero-desc">
-              Your trusted destination for premium skincare and beauty products.
-              We help you achieve healthy, radiant, and confident skin.
+              {{ t('about.heroDesc') }}
             </p>
           </div>
           <div class="hero-image-col">
@@ -55,34 +54,31 @@
               />
               <div class="welcome-image-badge">
                 <i class="fas fa-spa"></i>
-                <span>Premium Quality</span>
+                <span>{{ t('about.welcomeBadge') }}</span>
               </div>
             </div>
           </div>
           <div class="welcome-text-col fade-in-right ">
-            <span class="section-tag">Welcome</span>
-            <h2 class="welcome-title">Welcome to June Shop</h2>
+            <span class="section-tag">{{ t('about.welcomeTag') }}</span>
+            <h2 class="welcome-title">{{ t('about.welcomeTitle') }}</h2>
             <p class="welcome-text">
-              Welcome to <strong>June Shop</strong>, your trusted destination for premium skincare and beauty products.
-              We are passionate about helping our customers achieve healthy, radiant, and confident skin through
-              carefully selected products made with quality ingredients.
+              {{ t('about.welcomeText1') }}
             </p>
             <p class="welcome-text">
-              Every product in our collection is chosen with care — from gentle cleansers to advanced serums,
-              we believe that everyone deserves access to effective, safe, and luxurious skincare.
+              {{ t('about.welcomeText2') }}
             </p>
             <div class="welcome-feature-cards">
               <div class="welcome-feature-card fade-in-up">
                 <div class="welcome-fc-icon"><i class="fas fa-leaf"></i></div>
-                <span>100% Natural Ingredients</span>
+                <span>{{ t('about.featureNatural') }}</span>
               </div>
               <div class="welcome-feature-card fade-in-up">
                 <div class="welcome-fc-icon"><i class="fas fa-flask"></i></div>
-                <span>Dermatologist Tested</span>
+                <span>{{ t('about.featureDermatologist') }}</span>
               </div>
               <div class="welcome-feature-card fade-in-up">
                 <div class="welcome-fc-icon"><i class="fas fa-heart"></i></div>
-                <span>Cruelty Free & Sustainable</span>
+                <span>{{ t('about.featureCrueltyFree') }}</span>
               </div>
             </div>
           </div>
@@ -102,15 +98,12 @@
             <div class="mv-icon-wrap">
               <i class="fas fa-bullseye"></i>
             </div>
-            <h3 class="mv-title">Our Mission</h3>
+            <h3 class="mv-title">{{ t('about.missionTitle') }}</h3>
             <p class="mv-text">
-              Our mission is to provide safe, effective, and affordable skincare solutions that meet the
-              needs of every skin type. We believe that self-care should be simple, enjoyable, and accessible
-              to everyone.
+              {{ t('about.missionText1') }}
             </p>
             <p class="mv-text">
-              At June Shop, customer satisfaction is our top priority. We carefully choose products from
-              trusted brands and continuously work to offer the latest beauty trends and skincare innovations.
+              {{ t('about.missionText2') }}
             </p>
           </div>
           <!-- Vision Card -->
@@ -119,19 +112,17 @@
             <div class="mv-icon-wrap mv-icon-wrap--vision">
               <i class="fas fa-eye"></i>
             </div>
-            <h3 class="mv-title">Our Vision</h3>
+            <h3 class="mv-title">{{ t('about.visionTitle') }}</h3>
             <p class="mv-text">
-              Our vision is to become a leading online beauty store that inspires confidence and promotes
-              healthy skincare routines worldwide.
+              {{ t('about.visionText1') }}
             </p>
             <p class="mv-text">
-              We envision a world where skincare is not just about appearance — it's about feeling good
-              in your own skin, embracing your natural beauty, and practicing self-care as a daily ritual.
+              {{ t('about.visionText2') }}
             </p>
             <ul class="mv-list">
-              <li><i class="fas fa-check-circle"></i> Inspire confidence through quality products</li>
-              <li><i class="fas fa-check-circle"></i> Promote sustainable beauty practices</li>
-              <li><i class="fas fa-check-circle"></i> Build a global community of skincare lovers</li>
+              <li><i class="fas fa-check-circle"></i> {{ t('about.visionList1') }}</li>
+              <li><i class="fas fa-check-circle"></i> {{ t('about.visionList2') }}</li>
+              <li><i class="fas fa-check-circle"></i> {{ t('about.visionList3') }}</li>
             </ul>
           </div>
         </div>
@@ -149,7 +140,7 @@
               <i :class="stat.icon"></i>
             </div>
             <span class="stat-value" :ref="el => { if (el) statRefs[i] = el }">{{ stat.value }}</span>
-            <span class="stat-label">{{ stat.label }}</span>
+            <span class="stat-label">{{ t(stat.labelKey) }}</span>
           </div>
         </div>
       </div>
@@ -161,8 +152,8 @@
     <section class="why-section" ref="whyRef">
       <div class="container">
         <div class="section-header fade-in-up">
-          <span class="section-tag">Why Choose Us</span>
-          <h2 class="section-title">What Sets Us Apart</h2>
+          <span class="section-tag">{{ t('about.whyTag') }}</span>
+          <h2 class="section-title">{{ t('about.whyTitle') }}</h2>
         </div>
         <div class="why-grid">
           <div
@@ -173,54 +164,39 @@
             <div class="why-icon-wrap">
               <i :class="item.icon"></i>
             </div>
-            <h3 class="why-title">{{ item.title }}</h3>
-            <p class="why-text">{{ item.text }}</p>
+            <h3 class="why-title">{{ t(item.titleKey) }}</h3>
+            <p class="why-text">{{ t(item.textKey) }}</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ============================================
-         CALL TO ACTION SECTION
-         ============================================ -->
-    <!-- <section class="cta-section" ref="ctaRef">
-      <div class="cta-bg-pattern"></div>
-      <div class="container">
-        <div class="cta-content fade-in-up">
-          <div class="cta-icon-ring">
-            <i class="fas fa-sparkles"></i>
-          </div>
-          <h2 class="cta-title">Ready to Transform Your Skincare Routine?</h2>
-          <p class="cta-text">
-            Explore our curated collection of premium skincare products and discover what your skin has been missing.
-          </p>
-          <router-link to="/products" class="cta-btn">
-            Explore Our Collection <i class="fas fa-arrow-right"></i>
-          </router-link>
-        </div>
-      </div>
-    </section> -->
-
   </div>
 </template>
 
 <script>
+import { useTranslation } from '../composables/useTranslation'
+
 export default {
   name: 'AboutPage',
+  setup() {
+    const { t } = useTranslation()
+    return { t }
+  },
   data() {
     return {
       stats: [
-        { icon: 'fas fa-box', value: '500+', label: 'Products' },
-        { icon: 'fas fa-users', value: '50K+', label: 'Happy Customers' },
-        { icon: 'fas fa-leaf', value: '100%', label: 'Cruelty Free' }
+        { icon: 'fas fa-box', value: '500+', labelKey: 'about.statProducts' },
+        { icon: 'fas fa-users', value: '50K+', labelKey: 'about.statCustomers' },
+        { icon: 'fas fa-leaf', value: '100%', labelKey: 'about.statCrueltyFree' }
       ],
       whyItems: [
-        { icon: 'fas fa-leaf', title: 'Premium Quality', text: 'We source only the finest ingredients and partner with trusted brands that share our commitment to excellence and safety.' },
-        { icon: 'fas fa-heart', title: 'Customer First', text: 'Your satisfaction drives everything we do. From personalized recommendations to responsive support, we put you first.' },
-        { icon: 'fas fa-truck', title: 'Fast Shipping', text: 'Enjoy free shipping on all orders within the continental US. We carefully package every item to ensure it arrives in perfect condition.' },
-        { icon: 'fas fa-undo-alt', title: 'Hassle-Free Returns', text: 'Not completely satisfied? Our 30-day return policy makes it easy to find the perfect products for your skincare routine.' },
-        { icon: 'fas fa-flask', title: 'Dermatologist Approved', text: 'Every product in our catalog is reviewed by dermatologists to ensure it meets the highest standards of safety and efficacy.' },
-        { icon: 'fas fa-globe-americas', title: 'Sustainable Practices', text: 'We are committed to eco-friendly packaging, carbon-neutral shipping, and supporting brands that prioritize the planet.' }
+        { icon: 'fas fa-leaf', titleKey: 'about.whyQualityTitle', textKey: 'about.whyQualityText' },
+        { icon: 'fas fa-heart', titleKey: 'about.whyCustomerTitle', textKey: 'about.whyCustomerText' },
+        { icon: 'fas fa-truck', titleKey: 'about.whyShippingTitle', textKey: 'about.whyShippingText' },
+        { icon: 'fas fa-undo-alt', titleKey: 'about.whyReturnsTitle', textKey: 'about.whyReturnsText' },
+        { icon: 'fas fa-flask', titleKey: 'about.whyDermatologistTitle', textKey: 'about.whyDermatologistText' },
+        { icon: 'fas fa-globe-americas', titleKey: 'about.whySustainableTitle', textKey: 'about.whySustainableText' }
       ],
       statRefs: []
     }
@@ -839,90 +815,5 @@ export default {
   color: var(--text-secondary);
   line-height: 1.7;
   margin: 0;
-}
-
-/* ==============================================
-   CALL TO ACTION SECTION
-   ============================================== */
-.cta-section {
-  padding: 100px 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.cta-bg-pattern {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.04) 0%, transparent 70%);
-  pointer-events: none;
-}
-.cta-content {
-  position: relative;
-  z-index: 1;
-  max-width: 600px;
-  margin: 0 auto;
-}
-.cta-icon-ring {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  font-size: 28px;
-  color: #ffd700;
-  animation: ctaFloat 3s ease-in-out infinite;
-}
-@keyframes ctaFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-.cta-title {
-  font-size: 36px;
-  font-weight: 700;
-  color: #fff;
-  font-family: var(--font-display);
-  margin: 0 0 16px;
-  letter-spacing: -0.5px;
-}
-.cta-text {
-  font-size: 17px;
-  color: rgba(255,255,255,0.9);
-  line-height: 1.8;
-  margin: 0 auto 36px;
-  max-width: 480px;
-}
-.cta-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 18px 40px;
-  background: #fff;
-  color: #667eea;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 14px;
-  text-decoration: none;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-}
-.cta-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 0 30px rgba(255,255,255,0.3), 0 12px 40px rgba(0,0,0,0.2);
-  color: #764ba2;
-}
-.cta-btn i {
-  transition: transform 0.3s ease;
-}
-.cta-btn:hover i {
-  transform: translateX(4px);
 }
 </style>

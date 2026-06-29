@@ -13,7 +13,7 @@
         <div class="col-md-8">
           <div class="card">
             <div class="card-body">
-              <div v-for="item in cartStore.items" :key="item.id" class="cart-item mb-3">
+              <div v-for="(item, index) in cartStore.items" :key="item.id" class="cart-item mb-3">
                 <div class="row align-items-center">
                    <div class="col-2">
                      <img
@@ -43,7 +43,7 @@
                     </button>
                   </div>
                 </div>
-                <hr v-if="!isLast">
+                <hr v-if="index < cartStore.items.length - 1">
               </div>
             </div>
           </div>
