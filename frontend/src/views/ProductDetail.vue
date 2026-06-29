@@ -4,9 +4,9 @@
     <div class="breadcrumb-bar">
       <div class="container">
         <div class="breadcrumb-links">
-          <router-link to="/" class="breadcrumb-link">Home</router-link>
+          <router-link to="/" class="breadcrumb-link">{{ t('productDetail.home') }}</router-link>
           <i class="fas fa-chevron-right breadcrumb-sep"></i>
-          <router-link to="/products" class="breadcrumb-link">Products</router-link>
+          <router-link to="/products" class="breadcrumb-link">{{ t('productDetail.products') }}</router-link>
           <i class="fas fa-chevron-right breadcrumb-sep"></i>
           <span class="breadcrumb-current" v-if="product">{{ product.name }}</span>
         </div>
@@ -22,12 +22,12 @@
         <div class="product-image-col">
           <div class="product-image-main">
             <img
-              :src="`${API_URL}/storage/${product.image}`"
+              :src="product.image_url || `${API_URL}/storage/${product.image}`"
               :alt="product.name"
               class="product-image"
             />
             <div class="product-badge" v-if="product.stock === 0">
-              <span class="badge-soldout">Out of Stock</span>
+              <span class="badge-soldout">{{ t('productDetail.outOfStock') }}</span>
             </div>
           </div>
         </div>
@@ -35,7 +35,7 @@
         <!-- Info Column -->
         <div class="product-info-col">
           <div class="product-meta">
-            <span class="product-category">{{ product.category?.name || 'Skincare' }}</span>
+            <span class="product-category">{{ product.category?.name || t('products.skincare') }}</span>
             <span class="product-skin-type" v-if="product.skin_type">
               <i class="fas fa-leaf"></i> {{ product.skin_type }}
             </span>
@@ -47,7 +47,7 @@
             <span class="product-price">${{ product.price }}</span>
             <span class="product-stock" :class="{ 'stock-low': product.stock > 0 && product.stock <= 10 }">
               <i :class="product.stock > 0 ? 'fas fa-check-circle' : 'fas fa-times-circle'"></i>
-              {{ product.stock > 0 ? (product.stock <= 10 ? 'Only ' + product.stock + ' left' : 'In Stock') : 'Out of Stock' }}
+              {{ product.stock > 0 ? (product.stock <= 10 ? t('productDetail.onlyLeft', { stock: String(product.stock) }) : t('productDetail.inStock')) : t('productDetail.outOfStock') }}
             </span>
           </div>
 
@@ -56,14 +56,14 @@
           <div class="product-details-grid" v-if="product.ingredients || product.how_to_use">
             <div class="detail-block" v-if="product.ingredients">
               <h4 class="detail-title">
-                <i class="fas fa-flask"></i> Ingredients
+                <i class="fas fa-flask"></i> {{ t('productDetail.ingredients') }}
               </h4>
               <p class="detail-text">{{ product.ingredients }}</p>
             </div>
 
             <div class="detail-block" v-if="product.how_to_use">
               <h4 class="detail-title">
-                <i class="fas fa-book-open"></i> How to Use
+                <i class="fas fa-book-open"></i> {{ t('productDetail.howToUse') }}
               </h4>
               <p class="detail-text">{{ product.how_to_use }}</p>
             </div>
@@ -76,7 +76,7 @@
                 class="qty-btn"
                 @click="decrementQty"
                 :disabled="quantity <= 1"
-                aria-label="Decrease quantity"
+                :aria-label="t('productDetail.decreaseQty')"
               >
                 <i class="fas fa-minus"></i>
               </button>
@@ -91,7 +91,7 @@
                 class="qty-btn"
                 @click="incrementQty"
                 :disabled="quantity >= product.stock"
-                aria-label="Increase quantity"
+                :aria-label="t('productDetail.increaseQty')"
               >
                 <i class="fas fa-plus"></i>
               </button>
@@ -103,7 +103,17 @@
               :disabled="product.stock === 0"
             >
               <i class="fas fa-shopping-bag"></i>
-              <span>{{ product.stock === 0 ? 'Out of Stock' : 'Add to Cart' }}</span>
+              <span>{{ product.stock === 0 ? t('productDetail.outOfStock') : t('productDetail.addToCart') }}</span>
+            </button>
+
+            <button
+              class="wishlist-btn"
+              :class="{ active: wishlistStore.hasProduct(product.id) }"
+              @click="addToWishlist"
+              :aria-label="wishlistStore.hasProduct(product.id) ? t('productDetail.saved') : t('productDetail.favorite')"
+            >
+              <i class="fas fa-heart"></i>
+              <span>{{ wishlistStore.hasProduct(product.id) ? t('productDetail.saved') : t('productDetail.favorite') }}</span>
             </button>
           </div>
         </div>
@@ -114,7 +124,7 @@
       <div v-if="product" class="reviews-section">
         <div class="reviews-header">
           <h2 class="reviews-title">
-            <i class="fas fa-star"></i> Reviews
+            <i class="fas fa-star"></i> {{ t('productDetail.reviews') }}
             <span class="reviews-count" v-if="product.reviews">({{ product.reviews.length }})</span>
           </h2>
         </div>
@@ -127,7 +137,7 @@
                 {{ (review.user?.name || 'A')[0] }}
               </div>
               <div class="review-user-info">
-                <span class="review-user-name">{{ review.user?.name || 'Anonymous' }}</span>
+                <span class="review-user-name">{{ review.user?.name || t('productDetail.anonymous') }}</span>
                 <div class="review-stars">
                   <i
                     v-for="i in 5"
@@ -145,15 +155,15 @@
 
         <div v-else class="reviews-empty">
           <div class="empty-icon"><i class="fas fa-comment-dots"></i></div>
-          <p class="empty-text">No reviews yet. Be the first to share your experience!</p>
+          <p class="empty-text">{{ t('productDetail.noReviewsYet') }}</p>
         </div>
 
         <!-- Write Review -->
         <div v-if="authStore.isAuthenticated" class="review-form-card">
-          <h3 class="review-form-title">Write a Review</h3>
+          <h3 class="review-form-title">{{ t('productDetail.writeReview') }}</h3>
           <form @submit.prevent="submitReview">
             <div class="review-form-rating">
-              <label class="form-field-label">Rating</label>
+              <label class="form-field-label">{{ t('productDetail.rating') }}</label>
               <div class="star-picker">
                 <i
                   v-for="i in 5"
@@ -165,16 +175,16 @@
               </div>
             </div>
             <div class="review-form-field">
-              <label class="form-field-label">Your Review</label>
+              <label class="form-field-label">{{ t('productDetail.yourReview') }}</label>
               <textarea
                 v-model="reviewData.comment"
                 class="form-textarea"
                 rows="3"
-                placeholder="Share your experience with this product..."
+                :placeholder="t('productDetail.reviewPlaceholder')"
               ></textarea>
             </div>
             <button type="submit" class="submit-review-btn">
-              <i class="fas fa-paper-plane"></i> Submit Review
+              <i class="fas fa-paper-plane"></i> {{ t('productDetail.submitReview') }}
             </button>
           </form>
         </div>
@@ -188,6 +198,8 @@
 import axios from 'axios'
 import { useCartStore } from '../stores/cart'
 import { useAuthStore } from '../stores/auth'
+import { useWishlistStore } from '../stores/wishlist'
+import { useTranslation } from '../composables/useTranslation'
 
 export default {
   name: 'ProductDetail',
@@ -205,15 +217,20 @@ export default {
   setup() {
     const cartStore = useCartStore()
     const authStore = useAuthStore()
-    return { cartStore, authStore }
+    const wishlistStore = useWishlistStore()
+    const { t } = useTranslation()
+    return { cartStore, authStore, wishlistStore, t }
   },
   mounted() {
     this.fetchProduct()
+    if (this.authStore.isAuthenticated) {
+      this.wishlistStore.fetchWishlist()
+    }
   },
   methods: {
     async fetchProduct() {
       try {
-        const response = await axios.get(`/products/${this.$route.params.id}`)
+        const response = await axios.get(`/products/${this.$route.params.slug}`)
         this.product = response.data
       } catch (error) {
         console.error('Failed to fetch product:', error)
@@ -235,21 +252,40 @@ export default {
 
     async addToCart() {
       if (!this.authStore.isAuthenticated) {
-        this.$router.push('/login')
+        this.$router.push({ name: 'Login', query: { redirect: this.$route.fullPath } })
         return
       }
 
       const result = await this.cartStore.addToCart(this.product.id, this.quantity)
       if (result.success) {
-        alert('Product added to cart!')
+        alert(this.t('common.productAdded'))
       } else {
-        alert(result.error || 'Failed to add to cart')
+        alert(result.error || this.t('common.failedToAdd'))
+      }
+    },
+
+    async addToWishlist() {
+      if (!this.authStore.isAuthenticated) {
+        this.$router.push({ name: 'Login', query: { redirect: this.$route.fullPath } })
+        return
+      }
+
+      if (this.wishlistStore.hasProduct(this.product.id)) {
+        alert(this.t('products.savedToWishlist'))
+        return
+      }
+
+      const result = await this.wishlistStore.addToWishlist(this.product.id)
+      if (result.success) {
+        alert(this.t('products.addedToWishlist'))
+      } else {
+        alert(result.error || this.t('common.failedToAdd'))
       }
     },
 
     async submitReview() {
       if (this.reviewData.rating === 0) {
-        alert('Please select a rating')
+        alert(this.t('productDetail.selectRating'))
         return
       }
       try {
@@ -258,12 +294,12 @@ export default {
           rating: this.reviewData.rating,
           comment: this.reviewData.comment
         })
-        alert('Review submitted!')
+        alert(this.t('productDetail.reviewSubmitted'))
         this.reviewData.rating = 0
         this.reviewData.comment = ''
         await this.fetchProduct()
       } catch (error) {
-        alert('Failed to submit review')
+        alert(this.t('productDetail.reviewFailed'))
       }
     }
   }
@@ -582,6 +618,30 @@ export default {
   cursor: not-allowed;
 }
 
+.wishlist-btn {
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 18px;
+  background: #fff7fa;
+  border: 1px solid #f0d6e0;
+  border-radius: 12px;
+  color: #d6336c;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.wishlist-btn:hover,
+.wishlist-btn.active {
+  background: #fce4ec;
+  border-color: #e8b8ca;
+  transform: translateY(-2px);
+}
+
 /* ---- Reviews Section ---- */
 .reviews-section {
   margin-top: 60px;
@@ -853,6 +913,10 @@ export default {
   }
 
   .cart-btn {
+    width: 100%;
+  }
+
+  .wishlist-btn {
     width: 100%;
   }
 

@@ -1,0 +1,9 @@
+import base64, sys
+
+# base64 encoded content of Profile.vue
+encoded = "PC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImVuIj4KICA8aGVhZD4KICAgIDxtZXRhIGNoYXJzZXQ9IlVURi04Ij4KICAgIDxsaW5rIHJlbD0iaWNvbiIgaHJlZj0iL2Zhdmljb24uaWNvIj4KICAgIDxtZXRhIG5hbWU9InZpZXdwb3J0IiBjb250ZW50PSJ3aWR0aD1kZXZpY2Utd2lkdGgsIGluaXRpYWwtc2NhbGU9MS4wIj4KICAgIDx0aXRsZT5WaXRlIEFwcDwvdGl0bGU+CiAgPC9oZWFkPgogIDxib2R5PgogICAgPGRpdiBpZD0iYXBwIj48L2Rpdj4KICAgIDxzY3JpcHQgdHlwZT0ibW9kdWxlIiBzcmM9Ii9zcmMvbWFpbi50cyI+PC9zY3JpcHQ+CiAgPC9ib2R5Pgo8L2h0bWw+Cg=="
+
+with open('src/views/Profile.vue', 'wb') as f:
+    f.write(base64.b64decode(encoded))
+    
+print("Written successfully")

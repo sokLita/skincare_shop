@@ -4,8 +4,8 @@
     <section class="orders-header">
       <div class="container">
         <div class="orders-header-content">
-          <h1 class="orders-title">My Orders</h1>
-          <p class="orders-subtitle">Track and manage your skincare orders</p>
+          <h1 class="orders-title">{{ t('orders.title') }}</h1>
+          <p class="orders-subtitle">{{ t('orders.subtitle') }}</p>
         </div>
       </div>
     </section>
@@ -19,7 +19,7 @@
           <div class="spinner">
             <div class="spinner-ring"></div>
           </div>
-          <p class="state-text">Loading your orders...</p>
+          <p class="state-text">{{ t('orders.loading') }}</p>
         </div>
 
         <!-- Empty -->
@@ -27,10 +27,10 @@
           <div class="state-icon">
             <i class="fas fa-box-open"></i>
           </div>
-          <h3 class="state-title">No orders yet</h3>
-          <p class="state-text">Start shopping to place your first order</p>
+          <h3 class="state-title">{{ t('orders.emptyTitle') }}</h3>
+          <p class="state-text">{{ t('orders.emptyDesc') }}</p>
           <router-link to="/products" class="shop-btn">
-            <i class="fas fa-shopping-bag"></i> Shop Now
+            <i class="fas fa-shopping-bag"></i> {{ t('orders.shopNow') }}
           </router-link>
         </div>
 
@@ -41,7 +41,11 @@
             <!-- Order Header -->
             <div class="order-card-header">
               <div class="order-info">
-                <span class="order-number">Order #{{ order.order_number }}</span>
+                <span class="order-number">{{ t('orders.orderNumber', { number: String(order.order_number) }) }}</span>
+                <span v-if="authStore.isAdmin && order.user" class="order-customer">
+                  <i class="fas fa-user"></i> {{ order.user.name }}
+                </span>
+
                 <span class="order-date">{{ new Date(order.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</span>
               </div>
               <span class="order-status" :class="'status-' + order.status">
@@ -53,19 +57,19 @@
             <div class="order-card-body">
               <div v-for="item in order.items" :key="item.id" class="order-item">
                 <div class="order-item-image">
-                  <img
-                    :src="`${API_URL}/storage/${item.product.image}`"
+            <img
+                    :src="item.product.image_url || `${API_URL}/storage/${item.product.image}`"
                     :alt="item.product.name"
                   />
                 </div>
                 <div class="order-item-info">
                   <h4 class="order-item-name">{{ item.product.name }}</h4>
                   <p class="order-item-meta">
-                    Qty: {{ item.pivot.quantity }} &times; ${{ parseFloat(item.pivot.price).toFixed(2) }}
+                    {{ t('orders.qty') }}: {{ item.quantity }} &times; ${{ parseFloat(item.price).toFixed(2) }}
                   </p>
                 </div>
                 <div class="order-item-total">
-                  ${{ (parseFloat(item.pivot.quantity) * parseFloat(item.pivot.price)).toFixed(2) }}
+                  ${{ (parseFloat(item.quantity) * parseFloat(item.price)).toFixed(2) }}
                 </div>
               </div>
             </div>
@@ -81,7 +85,7 @@
                 </span>
               </div>
               <div class="order-total">
-                <span class="order-total-label">Total</span>
+                <span class="order-total-label">{{ t('orders.total') }}</span>
                 <span class="order-total-amount">${{ parseFloat(order.total_amount).toFixed(2) }}</span>
               </div>
             </div>
@@ -125,6 +129,8 @@
 
 <script>
 import axios from 'axios'
+import { useAuthStore } from '../stores/auth'
+import { useTranslation } from '../composables/useTranslation'
 
 export default {
   name: 'Orders',
@@ -144,6 +150,12 @@ export default {
   mounted() {
     this.fetchOrders()
   },
+  setup() {
+    const authStore = useAuthStore()
+    const { t } = useTranslation()
+    return { authStore, t }
+  },
+
   methods: {
     async fetchOrders(page = 1) {
       this.loading = true
@@ -386,6 +398,19 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+
+.order-customer {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #667eea;
+  font-weight: 600;
+}
+.order-customer i {
+  font-size: 12px;
+}
+
 }
 
 .order-item-info {

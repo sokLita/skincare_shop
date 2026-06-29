@@ -15,9 +15,14 @@
             <div class="card-body">
               <div v-for="item in cartStore.items" :key="item.id" class="cart-item mb-3">
                 <div class="row align-items-center">
-                  <div class="col-2">
-                    <img :src="`/storage/${item.product.image}`" class="img-fluid rounded" alt="Product">
-                  </div>
+                   <div class="col-2">
+                     <img
+                       :src="productImageSrc(item.product)"
+                       :alt="item.product.name"
+                       class="product-image"
+                       @error="setImageFallback($event, item.product.name)"
+                     >
+                   </div>
                   <div class="col-4">
                     <h6>{{ item.product.name }}</h6>
                     <span class="text-muted">${{ item.product.price }}</span>
@@ -78,39 +83,76 @@ import { useCartStore } from '../stores/cart'
 
 export default {
   name: 'Cart',
+  data() {
+    return {
+      API_URL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+    }
+  },
+  computed: {
+    assetBaseUrl() {
+      return this.API_URL.replace(/\/api\/?$/, '')
+    }
+  },
   setup() {
     const cartStore = useCartStore()
     return { cartStore }
   },
   mounted() {
-    this.cartStore.fetchCart()
+    this.cartStore.hydrateFromLocalStorage()
   },
   methods: {
     async updateQuantity(itemId, quantity) {
       if (quantity < 1) {
-        await this.removeItem(itemId)
+        this.removeItem(itemId)
         return
       }
-      try {
-        await this.cartStore.updateQuantity(itemId, quantity)
-      } catch (error) {
-        this.$toast.error('Failed to update quantity')
-      }
+      await this.cartStore.updateQuantity(itemId, quantity)
     },
     
     async removeItem(itemId) {
-      if (confirm('Remove this item from cart?')) {
-        try {
-          await this.cartStore.removeFromCart(itemId)
-        } catch (error) {
-          this.$toast.error('Failed to remove item')
-        }
-      }
+      await this.cartStore.removeFromCart(itemId)
     },
     
     proceedToCheckout() {
       this.$router.push('/checkout')
+    },
+
+    productImageSrc(product) {
+      if (!product) return this.placeholderImage('Product')
+
+      if (product.image_url) {
+        return product.image_url
+      }
+
+      if (product.image) {
+        if (/^(https?:)?\/\//.test(product.image) || product.image.startsWith('data:')) {
+          return product.image
+        }
+
+        const imagePath = product.image.startsWith('/') ? product.image : `/storage/${product.image}`
+        return `${this.assetBaseUrl}${imagePath}`
+      }
+
+      return this.placeholderImage(product.name)
+    },
+
+    placeholderImage(name = 'Product') {
+      const label = encodeURIComponent(name)
+      return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23fdf2f6'/%3E%3Ccircle cx='300' cy='230' r='96' fill='%23f0e0e6'/%3E%3Cpath d='M164 430c24-86 88-130 136-130s112 44 136 130' fill='%23e7d3dc'/%3E%3Ctext x='300' y='520' text-anchor='middle' font-family='Arial, sans-serif' font-size='34' font-weight='700' fill='%23667eea'%3E${label}%3C/text%3E%3C/svg%3E`
+    },
+
+    setImageFallback(event, name) {
+      event.target.src = this.placeholderImage(name)
     }
   }
 }
 </script>
+
+<style scoped>
+.product-image {
+  width: 100%;
+  height: auto;
+  border-radius: 0.25rem;
+  display: block;
+}
+</style>

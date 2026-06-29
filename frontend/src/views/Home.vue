@@ -6,50 +6,61 @@
       <div class="container">
         <div class="hero-content">
           <div class="hero-text">
-            <span class="hero-badge">Premium Skincare</span>
-            <h1 class="hero-title">Welcome to <span class="hero-highlight">Skincare Shop</span></h1>
-            <p class="hero-subtitle">Discover the perfect skincare routine for your unique skin. Clean beauty that nurtures both skin and soul.</p>
+            <span class="hero-badge">{{ t('home.heroBadge') }}</span>
+            <h1 class="hero-title">{{ t('home.heroTitlePrefix') }}<span class="hero-highlight">{{ t('home.heroTitleHighlight') }}</span></h1>
+            <p class="hero-subtitle">{{ t('home.heroSubtitle') }}</p>
             <div class="hero-actions">
               <router-link to="/products" class="hero-btn hero-btn--primary">
                 <i class="fas fa-shopping-bag"></i>
-                Shop Now
+                {{ t('home.shopNow') }}
               </router-link>
               <router-link to="/products" class="hero-btn hero-btn--secondary">
                 <i class="fas fa-eye"></i>
-                Explore
+                {{ t('home.explore') }}
               </router-link>
             </div>
           </div>
-          <div class="hero-visual">
-            <div class="hero-icon-circle">
-              <i class="fas fa-spa"></i>
-            </div>
-            <div class="hero-floating-icons">
-              <span class="float-icon float-icon-1"><i class="fas fa-leaf"></i></span>
-              <span class="float-icon float-icon-2"><i class="fas fa-water"></i></span>
-              <span class="float-icon float-icon-3"><i class="fas fa-sun"></i></span>
+          <div class="hero-product-image">
+            <img
+              src="https://i.pinimg.com/736x/e7/b8/25/e7b82570ac48e15ce7cbddb39279a583.jpg"
+              alt="Premium Skincare Products"
+              class="hero-main-image"
+            />
+            <div class="hero-image-badge">
+              <span class="badge-text">Premium</span>
             </div>
           </div>
         </div>
       </div>
       <div class="hero-wave">
-        <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
-          <path d="M0,50 C360,100 1080,0 1440,50 L1440,100 L0,100 Z" fill="#fdf2f6"></path>
-        </svg>
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="lipOilGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#ffd6e7" />
+          <stop offset="50%" style="stop-color:#ffb6d5" />
+          <stop offset="100%" style="stop-color:#ffc8dd" />
+        </linearGradient>
+      </defs>
+
+      <path
+          d="M0,60 C240,120 480,20 720,60 C960,100 1200,20 1440,60 L1440,120 L0,120 Z"
+          fill="url(#lipOilGradient)"
+        ></path>
+      </svg>
       </div>
-    </section>
+  </section>
 
     <!-- Featured Products -->
     <section class="featured-section">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Featured</span>
-          <h2 class="section-title">Handpicked for You</h2>
-          <p class="section-desc">Our most loved products, selected just for your skincare journey</p>
+          <span class="section-tag">{{ t('home.featuredTag') }}</span>
+          <h2 class="section-title">{{ t('home.featuredTitle') }}</h2>
+          <p class="section-desc">{{ t('home.featuredDesc') }}</p>
         </div>
 
         <div v-if="featuredProducts.length === 0" class="featured-empty">
-          <p>Loading featured products...</p>
+          <p>{{ t('home.loadingProducts') }}</p>
         </div>
 
         <div v-else class="featured-grid">
@@ -60,8 +71,8 @@
           >
             <div class="featured-image-wrap">
               <router-link :to="`/products/${product.id}`">
-                <img
-                  :src="`${API_URL}/storage/${product.image}`"
+                <ProductImage
+                  :src="productImageSrc(product)"
                   :alt="product.name"
                   class="featured-image"
                 />
@@ -93,7 +104,7 @@
 
         <div class="featured-more" v-if="featuredProducts.length > 0">
           <router-link to="/products" class="view-all-btn">
-            View All Products <i class="fas fa-arrow-right"></i>
+            {{ t('home.viewAll') }} <i class="fas fa-arrow-right"></i>
           </router-link>
         </div>
       </div>
@@ -103,9 +114,9 @@
     <section class="features-section">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Why Choose Us</span>
-          <h2 class="section-title">We Care About Your Skin</h2>
-          <p class="section-desc">Everything you need for a complete skincare experience</p>
+          <span class="section-tag">{{ t('home.featuresTag') }}</span>
+          <h2 class="section-title">{{ t('home.featuresTitle') }}</h2>
+          <p class="section-desc">{{ t('home.featuresDesc') }}</p>
         </div>
 
         <div class="features-grid">
@@ -113,61 +124,39 @@
             <div class="feature-icon-wrap">
               <i class="fas fa-shipping-fast"></i>
             </div>
-            <h3 class="feature-title">Free Shipping</h3>
-            <p class="feature-text">On all orders over $50 with express delivery available</p>
+            <h3 class="feature-title">{{ t('home.freeShipping') }}</h3>
+            <p class="feature-text">{{ t('home.freeShippingText') }}</p>
           </div>
 
           <div class="feature-card">
             <div class="feature-icon-wrap">
               <i class="fas fa-undo"></i>
             </div>
-            <h3 class="feature-title">Easy Returns</h3>
-            <p class="feature-text">30-day return policy. Not happy? Send it back, no questions asked</p>
+            <h3 class="feature-title">{{ t('home.easyReturns') }}</h3>
+            <p class="feature-text">{{ t('home.easyReturnsText') }}</p>
           </div>
 
           <div class="feature-card">
             <div class="feature-icon-wrap">
               <i class="fas fa-shield-alt"></i>
             </div>
-            <h3 class="feature-title">Secure Payment</h3>
-            <p class="feature-text">100% secure checkout with encrypted transactions</p>
+            <h3 class="feature-title">{{ t('home.securePayment') }}</h3>
+            <p class="feature-text">{{ t('home.securePaymentText') }}</p>
           </div>
 
           <div class="feature-card">
             <div class="feature-icon-wrap">
               <i class="fas fa-certificate"></i>
             </div>
-            <h3 class="feature-title">Premium Quality</h3>
-            <p class="feature-text">All products are dermatologist tested and approved</p>
+            <h3 class="feature-title">{{ t('home.premiumQuality') }}</h3>
+            <p class="feature-text">{{ t('home.premiumQualityText') }}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Newsletter CTA -->
-    <section class="cta-section">
-      <div class="container">
-        <div class="cta-card">
-          <div class="cta-content">
-            <h2 class="cta-title">Join Our Skincare Community</h2>
-            <p class="cta-text">Subscribe for exclusive deals, new arrivals, and skincare tips delivered to your inbox</p>
-            <form class="cta-form" @submit.prevent>
-              <div class="cta-input-wrap">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  class="cta-input"
-                  aria-label="Email address"
-                />
-                <button type="submit" class="cta-btn">
-                  Subscribe <i class="fas fa-paper-plane"></i>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
+
   </div>
 </template>
 
@@ -175,19 +164,29 @@
 import axios from 'axios'
 import { useCartStore } from '../stores/cart'
 import { useAuthStore } from '../stores/auth'
-
+import { useTranslation } from '../composables/useTranslation'
+import ProductImage from '../components/ui/ProductImage.vue'
 export default {
   name: 'Home',
+  components: {
+    ProductImage
+  },
   data() {
     return {
       featuredProducts: [],
       API_URL: import.meta.env.VITE_API_URL || 'http://localhost:8000'
     }
   },
+  computed: {
+    assetBaseUrl() {
+      return this.API_URL.replace(/\/api\/?$/, '')
+    }
+  },
   setup() {
     const cartStore = useCartStore()
     const authStore = useAuthStore()
-    return { cartStore, authStore }
+    const { t } = useTranslation()
+    return { cartStore, authStore, t }
   },
   mounted() {
     this.fetchFeaturedProducts()
@@ -201,7 +200,24 @@ export default {
         console.error('Failed to fetch products:', error)
       }
     },
-    
+
+    productImageSrc(product) {
+      if (product.image_url) {
+        return product.image_url
+      }
+
+      if (product.image) {
+        if (/^(https?:)?\/\//.test(product.image) || product.image.startsWith('data:')) {
+          return product.image
+        }
+
+        const imagePath = product.image.startsWith('/') ? product.image : `/storage/${product.image}`
+        return `${this.assetBaseUrl}${imagePath}`
+      }
+
+      return ''
+    },
+
     async addToCart(productId) {
       if (!this.authStore.isAuthenticated) {
         this.$router.push('/login')
@@ -209,9 +225,9 @@ export default {
       }
       const result = await this.cartStore.addToCart(productId)
       if (result.success) {
-        alert('Product added to cart!')
+        alert(this.t('common.productAdded'))
       } else {
-        alert(result.error || 'Failed to add to cart')
+        alert(result.error || this.t('common.failedToAdd'))
       }
     }
   }
@@ -340,60 +356,54 @@ export default {
   border-color: #d0b8c4;
 }
 
-/* Hero Visual */
-.hero-visual {
+/* ---- Hero Product Image (Product Page Style) ---- */
+.hero-product-image {
   position: relative;
-  width: 240px;
-  height: 240px;
-  flex-shrink: 0;
-}
-
-.hero-icon-circle {
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 80px;
-  color: rgba(102, 126, 234, 0.2);
-  border: 2px solid rgba(240, 224, 230, 0.6);
-  animation: pulse 3s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.03); }
-}
-
-.hero-floating-icons {
-  position: absolute;
-  inset: 0;
-}
-
-.float-icon {
-  position: absolute;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 380px;
+  height: 380px;
+  border-radius: 16px;
+  overflow: hidden;
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(180, 120, 140, 0.12);
-  color: #667eea;
-  font-size: 18px;
-  animation: float 4s ease-in-out infinite;
+  border: 1px solid #f0e0e6;
+  box-shadow: 0 8px 32px rgba(180, 120, 140, 0.2);
+  flex-shrink: 0;
+  transition: all 0.35s ease;
 }
 
-.float-icon-1 { top: -10px; right: 20px; animation-delay: 0s; }
-.float-icon-2 { bottom: 10px; left: -10px; animation-delay: 1.5s; }
-.float-icon-3 { bottom: 30px; right: -5px; animation-delay: 3s; }
+.hero-product-image:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(180, 120, 140, 0.25);
+  border-color: #d0b8c4;
+}
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+.hero-main-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.hero-product-image:hover .hero-main-image {
+  transform: scale(1.05);
+}
+
+.hero-image-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.badge-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 50px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 /* Wave Divider */
@@ -797,19 +807,13 @@ export default {
     justify-content: center;
   }
 
-  .hero-visual {
-    width: 180px;
-    height: 180px;
-  }
-
-  .hero-icon-circle {
-    width: 160px;
-    height: 160px;
-    font-size: 60px;
-  }
-
   .hero-title {
     font-size: 34px;
+  }
+
+  .hero-product-image {
+    width: 300px;
+    height: 300px;
   }
 
   .featured-grid {
@@ -837,6 +841,11 @@ export default {
   .hero-btn {
     padding: 12px 22px;
     font-size: 14px;
+  }
+
+  .hero-product-image {
+    width: 260px;
+    height: 260px;
   }
 
   .featured-grid {
@@ -879,6 +888,11 @@ export default {
   .hero-btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .hero-product-image {
+    width: 220px;
+    height: 220px;
   }
 
   .cta-input-wrap {

@@ -10,7 +10,7 @@
             <div class="legal-content">
               <section class="legal-section">
                 <h2>1. Acceptance of Terms</h2>
-                <p>By accessing and using Skincare Shop, you accept and agree to be bound by the terms and provision of this agreement.</p>
+                <p>By accessing and using June Shop, you accept and agree to be bound by the terms and provision of this agreement.</p>
               </section>
 
               <section class="legal-section">
@@ -30,7 +30,7 @@
 
               <section class="legal-section">
                 <h2>5. Limitation of Liability</h2>
-                <p>In no event shall Skincare Shop be liable for any indirect, incidental, special, consequential or punitive damages.</p>
+                <p>In no event shall June Shop be liable for any indirect, incidental, special, consequential or punitive damages.</p>
               </section>
 
               <section class="legal-section">

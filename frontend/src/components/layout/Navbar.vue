@@ -2,7 +2,7 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
       <router-link class="navbar-brand" to="/">
-        <i class="fas fa-spa"></i> Skincare Shop
+        <i class="fas fa-spa"></i> June Shop
       </router-link>
       
       <button class="navbar-toggler" type="button" @click="isNavOpen = !isNavOpen">
@@ -23,8 +23,14 @@
         </ul>
         
         <div class="d-flex align-items-center">
-          <router-link to="/wishlist" class="btn btn-outline-primary me-2" v-if="authStore.isAuthenticated">
+          <router-link to="/wishlist" class="btn btn-outline-primary me-2 position-relative" v-if="authStore.isAuthenticated">
             <i class="fas fa-heart"></i>
+            <span
+              class="badge bg-danger position-absolute top-0 start-100 translate-middle"
+              v-if="wishlistStore.count > 0"
+            >
+              {{ wishlistStore.count }}
+            </span>
           </router-link>
           
           <router-link to="/cart" class="btn btn-outline-secondary me-2 position-relative">
@@ -55,6 +61,7 @@
 <script>
 import { useAuthStore } from '../stores/auth'
 import { useCartStore } from '../stores/cart'
+import { useWishlistStore } from '../../stores/wishlist'
 
 export default {
   name: 'Navbar',
@@ -67,11 +74,13 @@ export default {
   setup() {
     const authStore = useAuthStore()
     const cartStore = useCartStore()
-    return { authStore, cartStore }
+    const wishlistStore = useWishlistStore()
+    return { authStore, cartStore, wishlistStore }
   },
   mounted() {
     if (this.authStore.isAuthenticated) {
       this.cartStore.fetchCart()
+      this.wishlistStore.fetchWishlist()
     }
   },
   methods: {

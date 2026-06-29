@@ -5,15 +5,15 @@
       <div class="container">
         <div class="page-header-content">
           <div class="page-header-text">
-            <h1 class="page-title">Our Products</h1>
-            <p class="page-subtitle">Discover the perfect skincare for your skin</p>
+            <h1 class="page-title">{{ t('products.title') }}</h1>
+            <p class="page-subtitle">{{ t('products.subtitle') }}</p>
           </div>
           <div class="page-header-search">
             <div class="search-wrap">
               <input
                 type="text"
                 class="search-input"
-                placeholder="Search products..."
+                :placeholder="t('products.searchPlaceholder')"
                 v-model="searchQuery"
                 @input="searchProducts"
               />
@@ -36,7 +36,7 @@
             <div class="filters-card">
               <div class="filters-header">
                 <i class="fas fa-sliders-h"></i>
-                <span>Filters</span>
+                <span>{{ t('products.filters') }}</span>
                 <button class="filters-clear" @click="resetFilters" v-if="hasActiveFilters">
                   <i class="fas fa-times"></i>
                 </button>
@@ -44,10 +44,10 @@
 
               <div class="filters-body">
                 <div class="filter-group">
-                  <label class="filter-label">Category</label>
+                  <label class="filter-label">{{ t('products.category') }}</label>
                   <div class="filter-select-wrap">
-                    <select class="filter-select" v-model="filters.category" @change="applyFilters">
-                      <option value="">All Categories</option>
+                    <select class="filter-select" v-model="filters.category_id" @change="applyFilters">
+                      <option value="">{{ t('products.allCategories') }}</option>
                       <option v-for="category in categories" :key="category.id" :value="category.id">
                         {{ category.name }}
                       </option>
@@ -57,23 +57,8 @@
                 </div>
 
                 <div class="filter-group">
-                  <label class="filter-label">Skin Type</label>
-                  <div class="filter-select-wrap">
-                    <select class="filter-select" v-model="filters.skin_type" @change="applyFilters">
-                      <option value="">All Skin Types</option>
-                      <option value="dry">Dry</option>
-                      <option value="oily">Oily</option>
-                      <option value="combination">Combination</option>
-                      <option value="sensitive">Sensitive</option>
-                      <option value="normal">Normal</option>
-                    </select>
-                    <i class="fas fa-chevron-down select-arrow"></i>
-                  </div>
-                </div>
-
-                <div class="filter-group">
                   <label class="filter-label">
-                    Max Price: <span class="filter-price-value">${{ filters.max_price }}</span>
+                    {{ t('products.maxPrice') }}: <span class="filter-price-value">${{ filters.max_price }}</span>
                   </label>
                   <div class="price-range-wrap">
                     <input
@@ -92,7 +77,7 @@
 
                 <button class="filters-reset-btn" @click="resetFilters">
                   <i class="fas fa-redo"></i>
-                  Reset Filters
+                  {{ t('products.resetFilters') }}
                 </button>
               </div>
             </div>
@@ -106,8 +91,8 @@
               <div class="state-icon">
                 <i class="fas fa-box-open"></i>
               </div>
-              <h3 class="state-title">No products found</h3>
-              <p class="state-text">Try adjusting your filters or search query</p>
+              <h3 class="state-title">{{ t('products.noProductsTitle') }}</h3>
+              <p class="state-text">{{ t('products.noProductsDesc') }}</p>
             </div>
 
             <!-- Grid -->
@@ -118,53 +103,63 @@
                 class="product-card"
               >
                 <div class="product-image-wrap">
-                  <router-link :to="`/products/${product.id}`">
-                    <img
-                      :src="`${API_URL}/storage/${product.image}`"
+                  <router-link :to="`/products/${product.slug}`">
+                    <ProductImage
+                      :src="productImageSrc(product)"
                       :alt="product.name"
                       class="product-image"
                     />
                   </router-link>
 
                   <div class="product-badge" v-if="product.stock === 0">
-                    <span class="badge badge-soldout">Out of Stock</span>
+                    <span class="badge badge-soldout">{{ t('products.outOfStock') }}</span>
                   </div>
 
-                  <div class="product-actions">
-                    <button
-                      class="action-btn action-cart"
-                      @click="addToCart(product.id)"
-                      :disabled="product.stock === 0"
-                      :title="product.stock === 0 ? 'Out of Stock' : 'Add to Cart'"
-                    >
-                      <i class="fas fa-shopping-bag"></i>
-                    </button>
-                    <router-link
-                      :to="`/products/${product.id}`"
-                      class="action-btn action-view"
-                      title="View Details"
-                    >
-                      <i class="fas fa-eye"></i>
-                    </router-link>
-                  </div>
+                  <button
+                    class="favorite-float-btn"
+                    :class="{ active: wishlistStore.hasProduct(product.id) }"
+                    @click="addToWishlist(product.id)"
+                    :title="wishlistStore.hasProduct(product.id) ? t('products.savedToWishlist') : t('products.addToWishlist')"
+                    :aria-label="wishlistStore.hasProduct(product.id) ? t('products.savedToWishlist') : t('products.addToWishlist')"
+                  >
+                    <i class="fas fa-heart"></i>
+                  </button>
                 </div>
 
                 <div class="product-info">
-                  <span class="product-category">{{ product.category?.name || 'Skincare' }}</span>
+                  <span class="product-category">{{ product.category?.name || t('products.skincare') }}</span>
                   <h3 class="product-name">
-                    <router-link :to="`/products/${product.id}`">{{ product.name }}</router-link>
+                    <router-link :to="`/products/${product.slug}`">{{ product.name }}</router-link>
                   </h3>
                   <p class="product-desc">{{ product.description }}</p>
-                  <div class="product-footer">
-                    <span class="product-price">${{ product.price }}</span>
-                    <button
-                      class="add-cart-btn"
-                      @click="addToCart(product.id)"
-                      :disabled="product.stock === 0"
-                    >
-                      <i class="fas fa-plus"></i>
-                    </button>
-                  </div>
+                  <div class="product-rating">
+                        <StarRating
+                          :rating="Number(product.avg_rating) || 0"
+                          :count="Number(product.rating_count) || 0"
+                          :showCount="true"
+                        />
+                      </div>
+                      <div class="product-pricing">
+                        <span class="product-price">${{ Number(product.price).toFixed(2) }}</span>
+                        <span v-if="product.old_price" class="product-old-price">${{ Number(product.old_price).toFixed(2) }}</span>
+                      </div>
+                      <div class="product-card-buttons">
+                        <button
+                          class="card-action-btn cart-btn"
+                          @click="addToCart(product)"
+                          :disabled="product.stock === 0"
+                        >
+                          <i class="fas fa-shopping-bag"></i>
+                          <span>{{ product.stock === 0 ? t('products.outOfStock') : t('products.addToCart') }}</span>
+                        </button>
+                        <button
+                          class="card-action-btn wishlist-btn"
+                          :class="{ active: wishlistStore.hasProduct(product.id) }"
+                          @click="toggleWishlist(product)"
+                        >
+                          <i class="fas fa-heart"></i>
+                        </button>
+                      </div>
                 </div>
               </div>
             </div>
@@ -175,7 +170,7 @@
                 class="page-btn page-prev"
                 @click="changePage(pagination.prev)"
                 :disabled="!pagination.prev"
-                :title="!pagination.prev ? 'No previous page' : 'Previous page'"
+                :title="!pagination.prev ? t('products.noPreviousPage') : t('products.previousPage')"
               >
                 <i class="fas fa-chevron-left"></i>
               </button>
@@ -196,7 +191,7 @@
                 class="page-btn page-next"
                 @click="changePage(pagination.next)"
                 :disabled="!pagination.next"
-                :title="!pagination.next ? 'No next page' : 'Next page'"
+                :title="!pagination.next ? t('products.noNextPage') : t('products.nextPage')"
               >
                 <i class="fas fa-chevron-right"></i>
               </button>
@@ -213,17 +208,22 @@
 import axios from 'axios'
 import { useCartStore } from '../stores/cart'
 import { useAuthStore } from '../stores/auth'
+import { useWishlistStore } from '../stores/wishlist'
+import { useToast } from '../composables/useToast'
+import { useTranslation } from '../composables/useTranslation'
+import StarRating from '../components/ui/StarRating.vue'
+import ProductImage from '../components/ui/ProductImage.vue'
 
 export default {
   name: 'Products',
+  components: { StarRating, ProductImage },
   data() {
     return {
       products: [],
       categories: [],
       searchQuery: '',
       filters: {
-        category: '',
-        skin_type: '',
+        category_id: '',
         max_price: 200
       },
       pagination: {
@@ -232,22 +232,32 @@ export default {
         prev: null,
         next: null
       },
-      API_URL: import.meta.env.VITE_API_URL || 'http://localhost:8000'
+      API_URL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
     }
   },
   computed: {
     hasActiveFilters() {
-      return this.filters.category !== '' || this.filters.skin_type !== '' || this.filters.max_price < 200 || this.searchQuery !== ''
+      return this.filters.category_id !== '' || this.filters.max_price < 200 || this.searchQuery !== ''
+    },
+
+    assetBaseUrl() {
+      return this.API_URL.replace(/\/api\/?$/, '')
     }
   },
   setup() {
     const cartStore = useCartStore()
     const authStore = useAuthStore()
-    return { cartStore, authStore }
+    const wishlistStore = useWishlistStore()
+    const toast = useToast()
+    const { t } = useTranslation()
+    return { cartStore, authStore, wishlistStore, toast, t }
   },
   mounted() {
     this.fetchCategories()
     this.fetchProducts()
+    if (this.authStore.isAuthenticated) {
+      this.wishlistStore.fetchWishlist()
+    }
   },
   methods: {
     async fetchCategories() {
@@ -261,11 +271,7 @@ export default {
     
     async fetchProducts(page = 1) {
       try {
-        const params = {
-          page,
-          search: this.searchQuery,
-          ...this.filters
-        }
+        const params = this.productQueryParams(page)
         const response = await axios.get('/products', { params })
         this.products = response.data.data
         this.pagination = {
@@ -278,17 +284,72 @@ export default {
         console.error('Failed to fetch products:', error)
       }
     },
+
+    productQueryParams(page) {
+      const params = { page }
+      const search = this.searchQuery.trim()
+
+      if (search) {
+        params.search = search
+      }
+
+      if (this.filters.category_id) {
+        params.category_id = this.filters.category_id
+      }
+
+      if (this.filters.max_price < 200) {
+        params.max_price = this.filters.max_price
+      }
+
+      return params
+    },
+
+    productImageSrc(product) {
+      if (product.image_url) {
+        return product.image_url
+      }
+
+      if (product.image) {
+        if (/^(https?:)?\/\//.test(product.image) || product.image.startsWith('data:')) {
+          return product.image
+        }
+
+        const imagePath = product.image.startsWith('/') ? product.image : `/storage/${product.image}`
+        return `${this.assetBaseUrl}${imagePath}`
+      }
+
+      return ''
+    },
     
-    async addToCart(productId) {
+    requireAuth() {
       if (!this.authStore.isAuthenticated) {
-        this.$router.push('/login')
+        this.$router.push({ name: 'Login', query: { redirect: this.$route.fullPath } })
+        return false
+      }
+
+      return true
+    },
+
+    async addToCart(product) {
+      if (!this.requireAuth()) {
         return
       }
-      const result = await this.cartStore.addToCart(productId)
-      if (result.success) {
-        alert('Product added to cart!')
+      const productId = product.id || product
+      this.cartStore.addToCart(productId, 1, product.id ? product : null)
+      this.toast.success(this.t('products.productAddedToCart'))
+    },
+
+    async toggleWishlist(product) {
+      if (!this.requireAuth()) {
+        return
+      }
+      const productId = product.id || product
+      if (this.wishlistStore.hasProduct(productId)) {
+        await this.wishlistStore.removeFromWishlist(productId)
+        this.toast.info(this.t('products.removedFromWishlist'))
       } else {
-        alert(result.error || 'Failed to add to cart')
+        this.wishlistStore.addToWishlist(productId)
+        this.toast.success(this.t('products.addedToWishlist'))
       }
     },
     
@@ -303,8 +364,7 @@ export default {
     },
     
     resetFilters() {
-      this.filters.category = ''
-      this.filters.skin_type = ''
+      this.filters.category_id = ''
       this.filters.max_price = 200
       this.searchQuery = ''
       this.pagination.current = 1
@@ -667,18 +727,18 @@ export default {
   overflow: hidden;
   aspect-ratio: 1;
   background: #fdf2f6;
-}
-
-.product-image {
+}  .product-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.6s ease;
+  display: flex;
 }
 
 .product-card:hover .product-image {
   transform: scale(1.08);
 }
+
 
 /* Badge */
 .product-badge {
@@ -698,61 +758,38 @@ export default {
   letter-spacing: 0.3px;
 }
 
-/* Action Buttons Overlay */
-.product-actions {
+/* Favorite Button Overlay */
+.favorite-float-btn {
   position: absolute;
   top: 12px;
-  left: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: all 0.3s ease;
-  z-index: 2;
-}
-
-.product-card:hover .product-actions {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.action-btn {
-  width: 36px;
-  height: 36px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
   border: 1px solid #f0e0e6;
-  border-radius: 10px;
-  color: #6b6b80;
-  text-decoration: none;
+  border-radius: 12px;
+  color: #d6336c;
   cursor: pointer;
   transition: all 0.25s ease;
   font-size: 14px;
   box-shadow: 0 2px 8px rgba(180, 120, 140, 0.1);
+  z-index: 2;
 }
 
-.action-btn:hover {
-  color: #2c3e50;
+.favorite-float-btn:hover {
   background: #ffffff;
+  border-color: #d6336c;
+  transform: scale(1.06);
 }
 
-.action-cart:hover {
-  border-color: #667eea;
-  color: #667eea;
-}
-
-.action-view:hover {
-  border-color: #764ba2;
-  color: #764ba2;
-}
-
-.action-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.favorite-float-btn.active {
+  background: #d6336c;
+  border-color: #d6336c;
+  color: #ffffff;
 }
 
 /* Product Info */
@@ -820,29 +857,59 @@ export default {
   margin-right: 1px;
 }
 
-.add-cart-btn {
-  width: 36px;
-  height: 36px;
+.product-card-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.card-action-btn {
+  min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
+  gap: 8px;
   border-radius: 10px;
-  color: #ffffff;
+  border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.25s ease;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-.add-cart-btn:hover:not(:disabled) {
-  transform: scale(1.1);
+.order-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+}
+
+.order-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
 }
 
-.add-cart-btn:disabled {
+.favorite-btn {
+  background: #fff7fa;
+  border-color: #f0d6e0;
+  color: #d6336c;
+}
+
+.favorite-btn:hover {
+  background: #fce4ec;
+  border-color: #e8b8ca;
+  transform: translateY(-2px);
+}
+
+.favorite-btn.active {
+  background: #fce4ec;
+  border-color: #d6336c;
+  color: #b42354;
+}
+
+.card-action-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* ---- Pagination ---- */
@@ -935,15 +1002,11 @@ export default {
   .search-wrap {
     width: 100%;
   }
-
-  .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  }
 }
 
 @media (max-width: 768px) {
   .page-header {
-    padding: 24px 0;
+    padding: 28px 0 24px;
   }
 
   .page-title {
@@ -955,42 +1018,18 @@ export default {
     gap: 16px;
   }
 
-  .product-info {
-    padding: 12px 14px 14px;
+  .product-card-buttons {
+    grid-template-columns: 1fr;
   }
 
-  .product-name {
-    font-size: 14px;
-  }
-
-  .product-price {
-    font-size: 17px;
-  }
-
-  .product-actions {
-    opacity: 1;
-    transform: none;
+  .filters-body {
+    padding: 16px;
   }
 }
 
 @media (max-width: 480px) {
-  .page-header-content {
-    padding: 0;
-  }
-
   .products-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  .pagination-nav {
-    gap: 8px;
-  }
-
-  .page-num {
-    min-width: 34px;
-    height: 34px;
-    font-size: 13px;
+    grid-template-columns: 1fr;
   }
 }
 </style>

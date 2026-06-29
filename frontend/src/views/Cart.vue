@@ -3,33 +3,67 @@
     <!-- Page Header -->
     <div class="page-header">
       <div class="container">
-        <h1 class="page-title">Shopping Cart</h1>
-        <p class="page-subtitle">{{ cartStore.count }} item{{ cartStore.count !== 1 ? 's' : '' }} in your bag</p>
+        <h1 class="page-title">{{ t('cart.title') }}</h1>
+        <p class="page-subtitle">{{ t('cart.subtitle', { count: String(cartStore.count) }) }}</p>
       </div>
     </div>
 
     <div class="container">
-      <!-- Empty State -->
-      <div v-if="cartStore.items.length === 0" class="empty-state">
+      <!-- Loading Skeleton (shown on first render before hydration) -->
+      <div v-if="isLoading" class="loading-state">
+        <div class="skeleton-layout">
+          <div class="skeleton-cart-items">
+            <div class="skeleton-card-header"></div>
+            <div v-for="i in 3" :key="i" class="skeleton-item">
+              <div class="skeleton-row">
+                <div class="skeleton-image"></div>
+                <div class="skeleton-details">
+                  <div class="skeleton-line w-60"></div>
+                  <div class="skeleton-line w-30"></div>
+                </div>
+                <div class="skeleton-line w-20"></div>
+                <div class="skeleton-qty">
+                  <div class="skeleton-line w-40"></div>
+                </div>
+                <div class="skeleton-line w-20"></div>
+                <div class="skeleton-line w-15"></div>
+              </div>
+            </div>
+          </div>
+          <div class="skeleton-summary">
+            <div class="skeleton-line w-70 h5"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line w-50"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line w-60"></div>
+            <div class="skeleton-divider"></div>
+            <div class="skeleton-line w-80 h4"></div>
+            <div class="skeleton-btn"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State (only after hydration confirms cart is empty) -->
+      <div v-else-if="cartStore.items.length === 0" class="empty-state">
         <div class="empty-icon">
           <i class="fas fa-shopping-bag"></i>
         </div>
-        <h3>Your cart is empty</h3>
-        <p>Discover your perfect skincare products and add them to your bag</p>
+        <h3>{{ t('cart.emptyTitle') }}</h3>
+        <p>{{ t('cart.emptyDesc') }}</p>
         <router-link to="/products" class="btn-primary-grad">
-          <i class="fas fa-arrow-left"></i> Continue Shopping
+          <i class="fas fa-arrow-left"></i> {{ t('cart.continueShopping') }}
         </router-link>
       </div>
 
-      <!-- Cart Content -->
+      <!-- Cart Content (only after hydration confirms items exist) -->
       <div v-else class="cart-layout">
         <div class="cart-items-section">
           <!-- Cart Header -->
           <div class="cart-header">
-            <span class="cart-header-label">Product</span>
-            <span class="cart-header-label">Price</span>
-            <span class="cart-header-label">Quantity</span>
-            <span class="cart-header-label cart-header-total">Total</span>
+            <span class="cart-header-label">{{ t('cart.product') }}</span>
+            <span class="cart-header-label">{{ t('cart.price') }}</span>
+            <span class="cart-header-label">{{ t('cart.quantity') }}</span>
+            <span class="cart-header-label cart-header-total">{{ t('cart.total') }}</span>
             <span class="cart-header-action"></span>
           </div>
 
@@ -39,22 +73,22 @@
               <!-- Product Image & Info -->
               <div class="cart-item-product">
                 <div class="cart-item-image-wrap">
-                  <img :src="`${API_URL}/storage/${item.product.image}`" 
-                       :alt="item.product.name"
+                  <img :src="productImageSrc(item.product)" 
+                       :alt="item.product?.name || t('cart.productUnavailable')"
                        class="cart-item-image"
                        @error="onImageError">
                 </div>
                 <div class="cart-item-info">
-                  <h6 class="cart-item-name">{{ item.product.name }}</h6>
-                  <span class="cart-item-category" v-if="item.product.category">
-                    {{ item.product.category }}
+                  <h6 class="cart-item-name">{{ item.product?.name || t('cart.loadingProduct') }}</h6>
+                  <span class="cart-item-category" v-if="item.product?.category">
+                    {{ categoryName(item.product.category) }}
                   </span>
                 </div>
               </div>
 
               <!-- Price -->
               <div class="cart-item-price">
-                <span class="current-price">${{ parseFloat(item.product.price).toFixed(2) }}</span>
+                <span class="current-price">${{ productPrice(item).toFixed(2) }}</span>
               </div>
 
               <!-- Quantity Controls -->
@@ -74,12 +108,12 @@
 
               <!-- Subtotal -->
               <div class="cart-item-subtotal">
-                <span class="subtotal-value">${{ (item.quantity * item.product.price).toFixed(2) }}</span>
+                <span class="subtotal-value">${{ (item.quantity * productPrice(item)).toFixed(2) }}</span>
               </div>
 
               <!-- Remove -->
               <div class="cart-item-remove">
-                <button class="remove-btn" @click="removeItem(item.id)" title="Remove item">
+                <button class="remove-btn" @click="removeItem(item.id)" :title="t('cart.removeItem')">
                   <i class="fas fa-trash-alt"></i>
                 </button>
               </div>
@@ -87,15 +121,15 @@
 
             <!-- Mobile Summary (visible on small screens) -->
             <div class="cart-item-mobile-summary">
-              <span class="cart-mobile-price">${{ parseFloat(item.product.price).toFixed(2) }} each</span>
-              <span class="cart-mobile-subtotal">Subtotal: ${{ (item.quantity * item.product.price).toFixed(2) }}</span>
+              <span class="cart-mobile-price">${{ productPrice(item).toFixed(2) }} {{ t('cart.each') }}</span>
+              <span class="cart-mobile-subtotal">{{ t('cart.mobileSubtotal') }}: ${{ (item.quantity * productPrice(item)).toFixed(2) }}</span>
             </div>
           </div>
 
           <!-- Continue Shopping Link -->
           <div class="cart-footer-links">
             <router-link to="/products" class="continue-link">
-              <i class="fas fa-arrow-left"></i> Continue Shopping
+              <i class="fas fa-arrow-left"></i> {{ t('cart.continueShopping') }}
             </router-link>
           </div>
         </div>
@@ -103,32 +137,32 @@
         <!-- Order Summary Sidebar -->
         <div class="cart-summary-section">
           <div class="summary-card">
-            <h5 class="summary-title">Order Summary</h5>
+            <h5 class="summary-title">{{ t('cart.orderSummary') }}</h5>
 
             <div class="summary-rows">
               <div class="summary-row">
-                <span class="summary-label">Items</span>
+                <span class="summary-label">{{ t('cart.items') }}</span>
                 <span class="summary-value">{{ cartStore.count }}</span>
               </div>
               <div class="summary-row">
-                <span class="summary-label">Subtotal</span>
+                <span class="summary-label">{{ t('cart.subtotal') }}</span>
                 <span class="summary-value">${{ cartStore.total.toFixed(2) }}</span>
               </div>
               <div class="summary-row">
-                <span class="summary-label">Shipping</span>
-                <span class="summary-value summary-free">Free</span>
+                <span class="summary-label">{{ t('cart.shipping') }}</span>
+                <span class="summary-value summary-free">{{ t('cart.free') }}</span>
               </div>
             </div>
 
             <div class="summary-divider"></div>
 
             <div class="summary-total">
-              <span>Total</span>
+              <span>{{ t('cart.total') }}</span>
               <span class="total-amount">${{ cartStore.total.toFixed(2) }}</span>
             </div>
 
             <button class="checkout-btn" @click="proceedToCheckout">
-              Proceed to Checkout
+              {{ t('cart.proceedToCheckout') }}
               <i class="fas fa-arrow-right"></i>
             </button>
 
@@ -148,43 +182,71 @@
 
 <script>
 import { useCartStore } from '../stores/cart'
+import { useTranslation } from '../composables/useTranslation'
 
 export default {
   name: 'Cart',
   setup() {
     const cartStore = useCartStore()
-    return { cartStore }
+    const { t } = useTranslation()
+    return { cartStore, t }
   },
   data() {
     return {
-      API_URL: import.meta.env.VITE_API_URL || 'http://localhost:8000'
+      API_URL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+      isLoading: true
     }
   },
   mounted() {
+    this.cartStore.hydrateFromLocalStorage()
+    this.isLoading = false
     this.cartStore.fetchCart()
   },
   methods: {
+    productPrice(item) {
+      return Number(item.product?.price || 0)
+    },
+
+    categoryName(category) {
+      return typeof category === 'string' ? category : category?.name
+    },
+
+    productImageSrc(product) {
+      if (!product) return this.placeholderImage()
+
+      if (product.image_url) {
+        return product.image_url
+      }
+
+      if (product.image) {
+        if (/^(https?:)?\/\//.test(product.image) || product.image.startsWith('data:')) {
+          return product.image
+        }
+
+        const imagePath = product.image.startsWith('/') ? product.image : `/storage/${product.image}`
+        return `${this.API_URL}${imagePath}`
+      }
+
+      return this.placeholderImage()
+    },
+
+    placeholderImage() {
+      return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Crect fill="%23fdf2f6" width="80" height="80"/%3E%3Ccircle cx="40" cy="31" r="13" fill="%23f0e0e6"/%3E%3Cpath d="M21 63c4-16 16-25 19-25s15 9 19 25" fill="%23e7d3dc"/%3E%3C/svg%3E'
+    },
+
     onImageError(e) {
       e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect fill="%23fdf2f6" width="80" height="80"/><text x="40" y="45" text-anchor="middle" font-size="28" fill="%23dcc8d0">💄</text></svg>'
     },
     async updateQuantity(itemId, quantity) {
       if (quantity < 1) {
-        await this.removeItem(itemId)
+        await this.cartStore.removeFromCart(itemId)
         return
       }
-      const result = await this.cartStore.updateQuantity(itemId, quantity)
-      if (!result.success) {
-        alert(result.error)
-      }
+      await this.cartStore.updateQuantity(itemId, quantity)
     },
     
     async removeItem(itemId) {
-      if (confirm('Remove this item from cart?')) {
-        const result = await this.cartStore.removeFromCart(itemId)
-        if (!result.success) {
-          alert(result.error)
-        }
-      }
+      await this.cartStore.removeFromCart(itemId)
     },
     
     proceedToCheckout() {
@@ -221,6 +283,136 @@ export default {
   color: #8a7a82;
   font-size: 1rem;
   margin: 0;
+}
+
+/* ========== LOADING SKELETON ========== */
+.loading-state {
+  padding: 30px 0;
+}
+
+.skeleton-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 30px;
+}
+
+@media (max-width: 992px) {
+  .skeleton-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.skeleton-cart-items {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0e0e6;
+}
+
+.skeleton-card-header {
+  height: 20px;
+  margin-bottom: 16px;
+  background: linear-gradient(90deg, #f5e8ee 25%, #fce4ec 50%, #f5e8ee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.skeleton-item {
+  padding: 20px 0;
+  border-bottom: 1px solid #f5e8ee;
+}
+.skeleton-item:last-child {
+  border-bottom: none;
+}
+
+.skeleton-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 80px 120px 80px 36px;
+  gap: 16px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .skeleton-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.skeleton-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f5e8ee 25%, #fce4ec 50%, #f5e8ee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-qty {
+  display: flex;
+  justify-content: center;
+}
+
+.skeleton-line {
+  height: 14px;
+  background: linear-gradient(90deg, #f5e8ee 25%, #fce4ec 50%, #f5e8ee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.skeleton-line.h4 { height: 18px; }
+.skeleton-line.h5 { height: 22px; }
+
+.skeleton-line.w-15 { width: 30px; }
+.skeleton-line.w-20 { width: 60px; }
+.skeleton-line.w-30 { width: 90px; }
+.skeleton-line.w-40 { width: 100px; }
+.skeleton-line.w-50 { width: 50%; }
+.skeleton-line.w-60 { width: 60%; }
+.skeleton-line.w-70 { width: 70%; }
+.skeleton-line.w-80 { width: 80%; }
+
+.skeleton-divider {
+  height: 1px;
+  background: linear-gradient(90deg, #f0e0e6, #e0d0d8, #f0e0e6);
+  margin: 18px 0;
+}
+
+.skeleton-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0e0e6;
+  position: sticky;
+  top: 90px;
+}
+
+.skeleton-btn {
+  height: 48px;
+  background: linear-gradient(90deg, #f5e8ee 25%, #fce4ec 50%, #f5e8ee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 12px;
+  margin-top: 6px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* Empty State */

@@ -9,11 +9,11 @@
           <div class="footer-col">
             <div class="footer-brand">
               <i class="fas fa-spa footer-brand-icon"></i>
-              <span class="footer-brand-name">Skincare</span>
+              <span class="footer-brand-name">June</span>
               <span class="footer-brand-shop">Shop</span>
             </div>
             <p class="footer-desc">
-              Your trusted destination for premium skincare products. We believe in clean beauty that nurtures both skin and soul.
+              {{ t('footer.brandDesc') }}
             </p>
             <div class="footer-social">
               <a href="#" class="social-link" aria-label="Facebook">
@@ -33,39 +33,39 @@
 
           <!-- Column 2: Quick Links -->
           <div class="footer-col">
-            <h4 class="footer-heading">Quick Links</h4>
+            <h4 class="footer-heading">{{ t('footer.quickLinks') }}</h4>
             <ul class="footer-links">
-              <li><router-link to="/">Home</router-link></li>
-              <li><router-link to="/products">Products</router-link></li>
-              <li><a href="#">Our Story</a></li>
-              <li><a href="#">Careers</a></li>
-              <li><a href="#">Press Inquiries</a></li>
+              <li><router-link to="/">{{ t('footer.home') }}</router-link></li>
+              <li><router-link to="/products">{{ t('footer.products') }}</router-link></li>
+              <li><a href="#">{{ t('footer.ourStory') }}</a></li>
+              <li><a href="#">{{ t('footer.careers') }}</a></li>
+              <li><a href="#">{{ t('footer.pressInquiries') }}</a></li>
             </ul>
           </div>
 
           <!-- Column 3: Customer Support -->
           <div class="footer-col">
-            <h4 class="footer-heading">Support</h4>
+            <h4 class="footer-heading">{{ t('footer.support') }}</h4>
             <ul class="footer-links">
-              <li><a href="#">Returns &amp; Exchanges</a></li>
-              <li><a href="#">Shipping Info</a></li>
-              <li><a href="#">Track Order</a></li>
-              <li><a href="#">Help Center</a></li>
-              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">{{ t('footer.returnsExchanges') }}</a></li>
+              <li><a href="#">{{ t('footer.shippingInfo') }}</a></li>
+              <li><a href="#">{{ t('footer.trackOrder') }}</a></li>
+              <li><a href="#">{{ t('footer.helpCenter') }}</a></li>
+              <li><a href="#">{{ t('footer.contactUs') }}</a></li>
             </ul>
           </div>
 
           <!-- Column 4: Newsletter & Contact -->
           <div class="footer-col">
-            <h4 class="footer-heading">Stay in Touch</h4>
+            <h4 class="footer-heading">{{ t('footer.stayInTouch') }}</h4>
             <p class="footer-newsletter-text">
-              Subscribe for exclusive deals, new arrivals, and skincare tips.
+              {{ t('footer.newsletterText') }}
             </p>
             <form class="footer-newsletter" @submit.prevent>
               <div class="newsletter-input-wrap">
                 <input
                   type="email"
-                  placeholder="Enter your email"
+                  :placeholder="t('footer.emailPlaceholder')"
                   class="newsletter-input"
                   aria-label="Email address"
                 />
@@ -90,14 +90,14 @@
       <div class="container">
         <div class="footer-bottom-content">
           <p class="footer-copyright">
-            &copy; {{ new Date().getFullYear() }} Skincare Shop. All rights reserved.
+            {{ t('footer.copyright', { year: String(new Date().getFullYear()) }) }}
           </p>
           <div class="footer-bottom-links">
-            <a href="#">Privacy Policy</a>
+            <a href="#">{{ t('footer.privacyPolicy') }}</a>
             <span class="footer-divider">|</span>
-            <a href="#">Terms &amp; Conditions</a>
+            <a href="#">{{ t('footer.termsConditions') }}</a>
             <span class="footer-divider">|</span>
-            <a href="#">Accessibility</a>
+            <a href="#">{{ t('footer.accessibility') }}</a>
           </div>
         </div>
       </div>
@@ -106,8 +106,14 @@
 </template>
 
 <script>
+import { useTranslation } from '../composables/useTranslation'
+
 export default {
-  name: 'SiteFooter'
+  name: 'SiteFooter',
+  setup() {
+    const { t } = useTranslation()
+    return { t }
+  }
 }
 </script>
 

@@ -3,8 +3,8 @@
     <!-- Page Header -->
     <div class="page-header">
       <div class="container">
-        <h1 class="page-title">Checkout</h1>
-        <p class="page-subtitle">Complete your order</p>
+        <h1 class="page-title">{{ t('checkout.title') }}</h1>
+        <p class="page-subtitle">{{ t('checkout.subtitle') }}</p>
       </div>
     </div>
 
@@ -17,16 +17,16 @@
             <div class="form-card">
               <div class="form-card-header">
                 <i class="fas fa-truck"></i>
-                <span>Shipping Information</span>
+                <span>{{ t('checkout.shippingInfo') }}</span>
               </div>
               <div class="form-card-body">
                 <div class="form-group">
-                  <label class="form-label">Shipping Address <span class="required">*</span></label>
-                  <textarea class="form-input" v-model="order.shipping_address" rows="3" required placeholder="Enter your shipping address"></textarea>
+                  <label class="form-label">{{ t('checkout.shippingAddress') }} <span class="required">*</span></label>
+                  <textarea class="form-input" v-model="order.shipping_address" rows="3" required :placeholder="t('checkout.shippingAddressPlaceholder')"></textarea>
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Billing Address <span class="required">*</span></label>
-                  <textarea class="form-input" v-model="order.billing_address" rows="3" required placeholder="Enter your billing address"></textarea>
+                  <label class="form-label">{{ t('checkout.billingAddress') }} <span class="required">*</span></label>
+                  <textarea class="form-input" v-model="order.billing_address" rows="3" required :placeholder="t('checkout.billingAddressPlaceholder')"></textarea>
                 </div>
               </div>
             </div>
@@ -35,30 +35,30 @@
             <div class="form-card">
               <div class="form-card-header">
                 <i class="fas fa-credit-card"></i>
-                <span>Payment &amp; Delivery</span>
+                <span>{{ t('checkout.paymentDelivery') }}</span>
               </div>
               <div class="form-card-body">
                 <div class="form-group">
-                  <label class="form-label">Payment Method <span class="required">*</span></label>
+                  <label class="form-label">{{ t('checkout.paymentMethod') }} <span class="required">*</span></label>
                   <div class="select-wrapper">
                     <select class="form-select" v-model="order.payment_method" required>
-                      <option value="" disabled>Select Payment Method</option>
-                      <option value="Credit Card">💳 Credit Card</option>
-                      <option value="PayPal">🅿️ PayPal</option>
-                      <option value="Bank Transfer">🏦 Bank Transfer</option>
-                      <option value="Cash on Delivery">💵 Cash on Delivery</option>
+                      <option value="" disabled>{{ t('checkout.selectPaymentMethod') }}</option>
+                      <option value="Credit Card">💳 {{ t('checkout.creditCard') }}</option>
+                      <option value="PayPal">🅿️ {{ t('checkout.paypal') }}</option>
+                      <option value="Bank Transfer">🏦 {{ t('checkout.bankTransfer') }}</option>
+                      <option value="Cash on Delivery">💵 {{ t('checkout.cashOnDelivery') }}</option>
                     </select>
                     <i class="fas fa-chevron-down select-arrow"></i>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Shipping Method <span class="required">*</span></label>
+                  <label class="form-label">{{ t('checkout.shippingMethod') }} <span class="required">*</span></label>
                   <div class="select-wrapper">
                     <select class="form-select" v-model="order.shipping_method" required>
-                      <option value="" disabled>Select Shipping Method</option>
-                      <option value="Standard">📦 Standard (3-5 days) — Free</option>
-                      <option value="Express">🚀 Express (1-2 days) — $8.00</option>
-                      <option value="Next Day">⚡ Next Day Delivery — $15.00</option>
+                      <option value="" disabled>{{ t('checkout.selectShippingMethod') }}</option>
+                      <option value="Standard">📦 {{ t('checkout.standard') }}</option>
+                      <option value="Express">🚀 {{ t('checkout.express') }}</option>
+                      <option value="Next Day">⚡ {{ t('checkout.nextDay') }}</option>
                     </select>
                     <i class="fas fa-chevron-down select-arrow"></i>
                   </div>
@@ -70,13 +70,13 @@
             <div class="form-card">
               <div class="form-card-header">
                 <i class="fas fa-pen"></i>
-                <span>Order Notes</span>
+                <span>{{ t('checkout.orderNotes') }}</span>
               </div>
               <div class="form-card-body">
                 <div class="form-group">
-                  <label class="form-label">Special Instructions</label>
+                  <label class="form-label">{{ t('checkout.specialInstructions') }}</label>
                   <textarea class="form-input" v-model="order.notes" rows="2" 
-                            placeholder="Any special instructions for your order..."></textarea>
+                            :placeholder="t('checkout.specialInstructionsPlaceholder')"></textarea>
                 </div>
               </div>
             </div>
@@ -84,7 +84,7 @@
             <!-- Submit -->
             <button type="submit" class="place-order-btn" :disabled="loading">
               <span v-if="loading" class="spinner"></span>
-              <span v-else><i class="fas fa-check-circle"></i> Place Order</span>
+              <span v-else><i class="fas fa-check-circle"></i> {{ t('checkout.placeOrder') }}</span>
             </button>
           </form>
         </div>
@@ -92,27 +92,27 @@
         <!-- Order Summary Sidebar -->
         <div class="checkout-summary-section">
           <div class="summary-card">
-            <h5 class="summary-title">Order Summary</h5>
+            <h5 class="summary-title">{{ t('checkout.orderSummary') }}</h5>
 
             <div class="summary-rows">
               <div class="summary-row">
-                <span class="summary-label">Items</span>
+                <span class="summary-label">{{ t('checkout.items') }}</span>
                 <span class="summary-value">{{ cartStore.count }}</span>
               </div>
               <div class="summary-row">
-                <span class="summary-label">Subtotal</span>
+                <span class="summary-label">{{ t('checkout.subtotal') }}</span>
                 <span class="summary-value">${{ cartStore.total.toFixed(2) }}</span>
               </div>
               <div class="summary-row">
-                <span class="summary-label">Shipping</span>
-                <span class="summary-value summary-free">Free</span>
+                <span class="summary-label">{{ t('checkout.shipping') }}</span>
+                <span class="summary-value summary-free">{{ t('checkout.free') }}</span>
               </div>
             </div>
 
             <div class="summary-divider"></div>
 
             <div class="summary-total">
-              <span>Total</span>
+              <span>{{ t('checkout.total') }}</span>
               <span class="total-amount">${{ cartStore.total.toFixed(2) }}</span>
             </div>
 
@@ -133,6 +133,8 @@
 import axios from 'axios'
 import { useCartStore } from '../stores/cart'
 import { useAuthStore } from '../stores/auth'
+import { useToast } from '../composables/useToast'
+import { useTranslation } from '../composables/useTranslation'
 
 export default {
   name: 'Checkout',
@@ -151,10 +153,11 @@ export default {
   setup() {
     const cartStore = useCartStore()
     const authStore = useAuthStore()
-    return { cartStore, authStore }
+    const toast = useToast()
+    const { t } = useTranslation()
+    return { cartStore, authStore, toast, t }
   },
   mounted() {
-    // Pre-fill with user data if available
     if (this.authStore.user) {
       this.order.shipping_address = this.authStore.user.address || ''
       this.order.billing_address = this.authStore.user.address || ''
@@ -164,11 +167,16 @@ export default {
     async placeOrder() {
       this.loading = true
       try {
-        const response = await axios.post('/orders', this.order)
-        alert('Order placed successfully! 🎉')
+        const response = await axios.post('/checkout', this.order)
+        
+        this.cartStore.clearCart()
+        
+        this.toast.success(this.t('checkout.orderSuccess'), 5000)
+        
         this.$router.push('/orders')
       } catch (error) {
-        alert(error.response?.data?.message || 'Failed to place order')
+        const message = error.response?.data?.message || this.t('checkout.orderFailed')
+        this.toast.error(message)
       } finally {
         this.loading = false
       }

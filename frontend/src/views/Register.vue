@@ -24,8 +24,8 @@
                 <div class="auth-icon mb-3">
                   <i class="fas fa-spa"></i>
                 </div>
-                <h3 class="auth-title">Create Account</h3>
-                <p class="auth-subtitle">Join our skincare community</p>
+                <h3 class="auth-title">{{ t('register.title') }}</h3>
+                <p class="auth-subtitle">{{ t('register.subtitle') }}</p>
               </div>
 
               <div v-if="errorMsg" class="auth-alert auth-alert--error">
@@ -36,19 +36,19 @@
               <form @submit.prevent="handleRegister" class="auth-form">
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="name" class="form-label">Full Name <span class="required">*</span></label>
+                    <label for="name" class="form-label">{{ t('register.fullName') }} <span class="required">*</span></label>
                     <div class="input-group-custom">
                       <span class="input-icon"><i class="fas fa-user"></i></span>
-                      <input type="text" id="name" v-model="form.name" class="form-input" placeholder="John Doe" required />
+                      <input type="text" id="name" v-model="form.name" class="form-input" :placeholder="t('register.fullNamePlaceholder')" required />
                       <span class="input-focus-ring"></span>
                     </div>
                   </div>
 
                   <div class="form-group">
-                    <label for="email" class="form-label">Email Address <span class="required">*</span></label>
+                    <label for="email" class="form-label">{{ t('register.emailAddress') }} <span class="required">*</span></label>
                     <div class="input-group-custom">
                       <span class="input-icon"><i class="fas fa-envelope"></i></span>
-                      <input type="email" id="email" v-model="form.email" class="form-input" placeholder="john@example.com" required />
+                      <input type="email" id="email" v-model="form.email" class="form-input" :placeholder="t('register.emailPlaceholder')" required />
                       <span class="input-focus-ring"></span>
                     </div>
                   </div>
@@ -56,10 +56,10 @@
 
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="password" class="form-label">Password <span class="required">*</span></label>
+                    <label for="password" class="form-label">{{ t('register.password') }} <span class="required">*</span></label>
                     <div class="input-group-custom">
                       <span class="input-icon"><i class="fas fa-lock"></i></span>
-                      <input :type="showPassword ? 'text' : 'password'" id="password" v-model="form.password" class="form-input" placeholder="Min. 8 characters" required minlength="8" />
+                      <input :type="showPassword ? 'text' : 'password'" id="password" v-model="form.password" class="form-input" :placeholder="t('register.passwordPlaceholder')" required minlength="8" />
                       <button type="button" class="input-toggle-pass" @click="showPassword = !showPassword" tabindex="-1">
                         <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
                       </button>
@@ -71,26 +71,18 @@
                       </div>
                       <span class="hint-text" :class="{ 'hint-valid': form.password.length >= 8 }">
                         <i :class="form.password.length >= 8 ? 'fas fa-check-circle' : 'fas fa-circle'"></i>
-                        Minimum 8 characters
+                        {{ t('register.minChars') }}
                       </span>
                     </div>
                   </div>
 
                   <div class="form-group">
-                    <label for="phone" class="form-label">Phone Number</label>
+                    <label for="phone" class="form-label">{{ t('register.phoneNumber') }}</label>
                     <div class="input-group-custom">
                       <span class="input-icon"><i class="fas fa-phone"></i></span>
-                      <input type="tel" id="phone" v-model="form.phone" class="form-input" placeholder="+1 234 567 8900" />
+                      <input type="tel" id="phone" v-model="form.phone" class="form-input" :placeholder="t('register.phonePlaceholder')" />
                       <span class="input-focus-ring"></span>
                     </div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="address" class="form-label">Address</label>
-                  <div class="input-group-custom input-group-custom--textarea">
-                    <textarea id="address" v-model="form.address" class="form-input form-input--textarea" rows="3" placeholder="Enter your full address"></textarea>
-                    <span class="input-focus-ring"></span>
                   </div>
                 </div>
 
@@ -99,10 +91,10 @@
                     <input type="checkbox" v-model="agreeTerms" />
                     <span class="checkmark"></span>
                     <span class="checkbox-label">
-                      I agree to the
-                      <router-link to="/terms" class="terms-link">Terms of Service</router-link>
-                      and
-                      <router-link to="/privacy" class="terms-link">Privacy Policy</router-link>
+                      {{ t('register.agreeTerms') }}
+                      <router-link to="/terms" class="terms-link">{{ t('register.termsOfService') }}</router-link>
+                      {{ t('register.andText') }}
+                      <router-link to="/privacy" class="terms-link">{{ t('register.privacyPolicy') }}</router-link>
                       <span class="required">*</span>
                     </span>
                   </label>
@@ -110,29 +102,29 @@
 
                 <button type="submit" class="auth-btn" :disabled="loading || !agreeTerms">
                   <span v-if="loading" class="spinner"></span>
-                  <span v-if="loading">Creating Account...</span>
-                  <span v-else>Create Account <i class="fas fa-arrow-right ms-2"></i></span>
+                  <span v-if="loading">{{ t('register.creatingAccount') }}</span>
+                  <span v-else>{{ t('register.createAccount') }} <i class="fas fa-arrow-right ms-2"></i></span>
                 </button>
               </form>
 
               <div class="auth-divider">
-                <span>or sign up with</span>
+                <span>{{ t('register.orSignUpWith') }}</span>
               </div>
 
               <div class="social-btns">
                 <button type="button" class="social-btn social-btn--google" @click="socialSignup('google')">
                   <i class="fab fa-google"></i>
-                  <span>Google</span>
+                  <span>{{ t('register.google') }}</span>
                 </button>
                 <button type="button" class="social-btn social-btn--facebook" @click="socialSignup('facebook')">
                   <i class="fab fa-facebook-f"></i>
-                  <span>Facebook</span>
+                  <span>{{ t('register.facebook') }}</span>
                 </button>
               </div>
 
               <div class="auth-footer">
-                <p>Already have an account?
-                  <router-link to="/login" class="auth-link">Sign in</router-link>
+                <p>{{ t('register.alreadyHaveAccount') }}
+                  <router-link to="/login" class="auth-link">{{ t('register.signIn') }}</router-link>
                 </p>
               </div>
             </div>
@@ -145,12 +137,13 @@
 
 <script>
 import { useAuthStore } from '../stores/auth'
+import { useTranslation } from '../composables/useTranslation'
 
 export default {
   name: 'Register',
   data() {
     return {
-      form: { name: '', email: '', password: '', phone: '', address: '' },
+      form: { name: '', email: '', password: '', phone: '' },
       loading: false,
       errorMsg: '',
       showPassword: false,
@@ -159,8 +152,9 @@ export default {
   },
   setup() {
     const authStore = useAuthStore()
+    const { t } = useTranslation()
     authStore.initAxios()
-    return { authStore }
+    return { authStore, t }
   },
   computed: {
     passwordStrengthClass() {
@@ -176,10 +170,13 @@ export default {
     async handleRegister() {
       this.loading = true
       this.errorMsg = ''
-      const result = await this.authStore.register(this.form)
+      const result = await this.authStore.register({
+        ...this.form,
+        password_confirmation: this.form.password
+      })
       this.loading = false
       if (result.success) {
-        this.$router.push('/')
+        this.$router.push(this.$route.query.redirect || '/')
       } else {
         const errors = result.error
         this.errorMsg = typeof errors === 'object'
@@ -395,5 +392,100 @@ export default {
   .auth-card-inner { padding:28px 20px; }
   .auth-icon { width:64px; height:64px; font-size:26px; border-radius:18px; }
   .bg-orb { filter:blur(50px); }
+}
+
+/* Refined auth style */
+.auth-page {
+  background: linear-gradient(135deg, #fce4ec 0%, #fdf2f6 40%, #ffffff 100%);
+  overflow: auto;
+}
+
+.auth-background,
+.auth-floating-icons {
+  display: none;
+}
+
+.auth-card {
+  animation: cardFadeIn 0.45s ease;
+}
+
+.auth-card-inner {
+  border-radius: 8px;
+  padding: 34px;
+  background: #ffffff;
+  border: 1px solid #ead7df;
+  box-shadow: 0 18px 45px rgba(44, 62, 80, 0.1);
+}
+
+.auth-card-inner:hover {
+  box-shadow: 0 22px 52px rgba(44, 62, 80, 0.12);
+}
+
+.auth-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  font-size: 24px;
+}
+
+.auth-title {
+  font-size: 26px;
+  letter-spacing: 0;
+}
+
+.auth-subtitle {
+  color: #6b6b80;
+}
+
+.form-label {
+  color: #374151;
+}
+
+.form-input {
+  min-height: 48px;
+  border-radius: 8px;
+  border: 1px solid #ead7df;
+  background: #fffafd;
+}
+
+.form-input:hover,
+.form-input:focus {
+  background: #ffffff;
+}
+
+.input-focus-ring {
+  display: none;
+}
+
+.auth-btn,
+.social-btn,
+.auth-alert,
+.checkmark {
+  border-radius: 8px;
+}
+
+.auth-btn {
+  min-height: 48px;
+  box-shadow: 0 10px 22px rgba(102, 126, 234, 0.25);
+}
+
+.social-btns {
+  gap: 10px;
+}
+
+.social-btn {
+  background: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .auth-page {
+    background-size: 34px 34px;
+  }
+
+  .auth-card-inner {
+    padding: 28px 22px;
+  }
 }
 </style>

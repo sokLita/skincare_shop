@@ -1,12 +1,17 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import { useCartStore } from './cart'
+import { useWishlistStore } from './wishlist'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+const API_URL = import.meta.env.VITE_API_URL || '/api'
 
 interface User {
   id: number
   name: string
   email: string
+  phone: string | null
+  address: string | null
+  profile_photo: string | null
   is_admin: boolean | number
   [key: string]: any
 }
@@ -82,15 +87,25 @@ export const useAuthStore = defineStore('auth', {
     },
     
     async logout() {
+      console.log('[Auth] Logging out... Token before:', !!this.token, 'User before:', this.user?.name)
+
       try {
         await axios.post('/logout')
+        console.log('[Auth] Backend logout successful')
       } catch (error) {
-        console.error('Logout error:', error)
+        console.warn('[Auth] Backend logout failed (may already be invalidated):', error)
       } finally {
         this.token = null
         this.user = null
         localStorage.removeItem('token')
         delete axios.defaults.headers.common['Authorization']
+
+        // Clear user-specific state from other stores
+        useCartStore().clearLocalCart()
+        useWishlistStore().clearWishlist()
+
+        console.log('[Auth] Logout complete. Token after:', !!this.token, 'User after:', this.user)
+        console.log('[Auth] localStorage token:', localStorage.getItem('token'))
       }
     },
     
@@ -100,7 +115,16 @@ export const useAuthStore = defineStore('auth', {
         const response = await axios.get('/profile')
         this.user = response.data
       } catch (error) {
-        this.logout()
+        // On error, clear auth state and redirect to login
+        const tokenWasCleared = !!this.token
+        this.token = null
+        this.user = null
+        localStorage.removeItem('token')
+        delete axios.defaults.headers.common['Authorization']
+        // Redirect to login to avoid being stuck on a protected page with expired credentials
+        if (tokenWasCleared) {
+          window.location.href = '/login'
+        }
       }
     },
     

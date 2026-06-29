@@ -79,13 +79,13 @@
           
           <div v-else v-for="product in products" :key="product.id" class="col-md-4 mb-4">
             <div class="card h-100">
-              <router-link :to="`/products/${product.id}`">
-                <img 
-                  :src="`/storage/${product.image}`" 
-                  class="card-img-top" 
+              <router-link :to="`/products/${product.slug}`">
+                <ProductImage
+                  :src="productImageSrc(product)"
                   :alt="product.name"
-                  style="height: 200px; object-fit: cover;"
-                >
+                  class="card-img-top"
+                  style="height: 200px"
+                />
               </router-link>
               <div class="card-body">
                 <h5 class="card-title">{{ product.name }}</h5>
@@ -136,9 +136,11 @@
 import axios from 'axios'
 import { useCartStore } from '../stores/cart'
 import { useAuthStore } from '../stores/auth'
+import ProductImage from '../ui/ProductImage.vue'
 
 export default {
   name: 'ProductList',
+  components: { ProductImage },
   data() {
     return {
       products: [],
@@ -205,13 +207,9 @@ export default {
         this.$router.push('/login')
         return
       }
-      
-      try {
-        await this.cartStore.addToCart(productId)
-        this.$toast.success('Product added to cart!')
-      } catch (error) {
-        this.$toast.error(error.response?.data?.message || 'Failed to add to cart')
-      }
+
+      // Cart updates must be immediate with no alerts/popups/notifications
+      this.cartStore.addToCart(productId)
     },
     
     searchProducts() {
@@ -234,7 +232,26 @@ export default {
       if (page) {
         this.fetchProducts(page)
       }
-    }
+    },
+
+    productImageSrc(product) {
+      if (!product) return ''
+
+      if (product.image_url) {
+        return product.image_url
+      }
+
+      if (product.image) {
+        if (/^(https?:)?\/\//.test(product.image) || product.image.startsWith('data:')) {
+          return product.image
+        }
+
+        const imagePath = product.image.startsWith('/') ? product.image : `/storage/${product.image}`
+        return `http://localhost:8000${imagePath}`
+      }
+
+      return ''
+    },
   }
 }
 </script>

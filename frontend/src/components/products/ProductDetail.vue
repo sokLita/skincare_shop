@@ -3,11 +3,11 @@
     <div class="row">
       <div class="col-md-6">
         <div class="position-relative">
-          <img 
-            :src="`/storage/${product.image}`" 
-            class="img-fluid rounded" 
+          <ProductImage
+            :src="productImageSrc(product)"
             :alt="product.name"
-          >
+            class="img-fluid rounded product-detail-img"
+          />
           <button 
             v-if="authStore.isAuthenticated"
             class="btn btn-lg position-absolute top-0 end-0 m-3"
@@ -20,12 +20,12 @@
         
         <div class="row mt-2" v-if="product.images && product.images.length > 0">
           <div class="col-3" v-for="(image, index) in product.images" :key="index">
-            <img 
-              :src="`/storage/${image}`" 
-              class="img-fluid rounded cursor-pointer"
+            <ProductImage
+              :src="productImageSrc({ image })"
+              :alt="product.name + ' thumbnail'"
+              class="img-fluid rounded cursor-pointer product-thumb"
               @click="product.image = image"
-              style="height: 100px; object-fit: cover;"
-            >
+            />
           </div>
         </div>
       </div>
@@ -132,9 +132,12 @@
 import axios from 'axios'
 import { useAuthStore } from '../stores/auth'
 import { useCartStore } from '../stores/cart'
+import { useWishlistStore } from '../../stores/wishlist'
+import ProductImage from '../ui/ProductImage.vue'
 
 export default {
   name: 'ProductDetail',
+  components: { ProductImage },
   data() {
     return {
       product: null,
@@ -143,15 +146,24 @@ export default {
       reviewData: {
         rating: '',
         comment: ''
-      }
+      },
+      API_URL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+    }
+  },
+  computed: {
+    assetBaseUrl() {
+      return this.API_URL.replace(/\/api\/?$/, '')
     }
   },
   setup() {
     const authStore = useAuthStore()
     const cartStore = useCartStore()
-    return { authStore, cartStore }
+    const wishlistStore = useWishlistStore()
+    return { authStore, cartStore, wishlistStore }
   },
   mounted() {
+    // Keep heart state in sync immediately using localStorage-backed store
+    this.wishlistStore.hydrateFromLocalStorage()
     this.fetchProduct()
   },
   methods: {
@@ -159,23 +171,12 @@ export default {
       try {
         const response = await axios.get(`/products/${this.$route.params.id}`)
         this.product = response.data
-        if (this.authStore.isAuthenticated) {
-          this.checkWishlist()
-        }
+
+        // Heart state comes from Pinia store (no server-based /wishlist/check).
+        this.isInWishlist = this.wishlistStore.hasProduct(this.product.id)
       } catch (error) {
         console.error('Failed to fetch product:', error)
         this.$router.push('/products')
-      }
-    },
-    
-    async checkWishlist() {
-      try {
-        const response = await axios.get('/wishlist/check', {
-          params: { product_id: this.product.id }
-        })
-        this.isInWishlist = response.data.exists
-      } catch (error) {
-        console.error('Failed to check wishlist:', error)
       }
     },
     
@@ -184,19 +185,14 @@ export default {
         this.$router.push('/login')
         return
       }
-      
-      try {
-        if (this.isInWishlist) {
-          await axios.delete(`/wishlist/${this.product.id}`)
-          this.isInWishlist = false
-          this.$toast.success('Removed from wishlist')
-        } else {
-          await axios.post('/wishlist', { product_id: this.product.id })
-          this.isInWishlist = true
-          this.$toast.success('Added to wishlist')
-        }
-      } catch (error) {
-        this.$toast.error('Failed to update wishlist')
+
+      // No duplicates: store ignores duplicates and persists immediately.
+      if (this.isInWishlist) {
+        await this.wishlistStore.removeFromWishlist(this.product.id)
+        this.isInWishlist = false
+      } else {
+        await this.wishlistStore.addToWishlist(this.product.id)
+        this.isInWishlist = true
       }
     },
     
@@ -217,13 +213,9 @@ export default {
         this.$router.push('/login')
         return
       }
-      
-      try {
-        await this.cartStore.addToCart(this.product.id, this.quantity)
-        this.$toast.success('Product added to cart!')
-      } catch (error) {
-        this.$toast.error(error.response?.data?.message || 'Failed to add to cart')
-      }
+
+      // No alerts/popups/notifications for add-to-cart click.
+      await this.cartStore.addToCart(this.product.id, this.quantity)
     },
     
     async submitReview() {
@@ -240,7 +232,19 @@ export default {
       } catch (error) {
         this.$toast.error('Failed to submit review')
       }
-    }
+    },
+
+    productImageSrc(product) {
+      if (!product || !product.image) return ''
+
+      const image = typeof product === 'object' ? product.image : product
+      if (/^(https?:)?\/\//.test(image) || image.startsWith('data:')) {
+        return image
+      }
+
+      const imagePath = image.startsWith('/') ? image : `/storage/${image}`
+      return `${this.assetBaseUrl}${imagePath}`
+    },
   }
 }
 </script>
