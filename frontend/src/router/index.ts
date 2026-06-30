@@ -24,6 +24,11 @@ const routes = [
     component: () => import('../views/Login.vue')
   },
   {
+    path: '/google-callback',
+    name: 'GoogleCallback',
+    component: () => import('../views/GoogleCallback.vue')
+  },
+  {
     path: '/forgot-password',
     name: 'ForgotPassword',
     component: () => import('../views/ForgotPassword.vue')
