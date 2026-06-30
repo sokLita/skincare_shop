@@ -23,6 +23,31 @@ const routes = [
     name: 'Login',
     component: () => import('../views/Login.vue')
   },
+  // Admin Auth Routes
+  {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: () => import('../views/AdminLoginPage.vue'),
+    meta: { layout: 'blank' }
+  },
+  {
+    path: '/admin/register',
+    name: 'AdminRegister',
+    component: () => import('../views/AdminRegisterPage.vue'),
+    meta: { layout: 'blank' }
+  },
+  {
+    path: '/admin/forgot-password',
+    name: 'AdminForgotPassword',
+    component: () => import('../views/AdminForgotPassword.vue'),
+    meta: { layout: 'blank' }
+  },
+  {
+    path: '/admin/dashboard',
+    name: 'AdminDashboard',
+    component: () => import('../views/AdminDashboard.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
   {
     path: '/google-callback',
     name: 'GoogleCallback',

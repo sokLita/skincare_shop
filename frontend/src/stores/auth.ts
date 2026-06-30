@@ -67,6 +67,25 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     
+    async adminLogin(email: string, password: string) {
+      this.loading = true
+      try {
+        const response = await axios.post('/admin/login', { email, password })
+        this.token = response.data.token
+        this.user = response.data.user
+        localStorage.setItem('token', this.token!)
+        axios.defaults.headers.common['Authorization'] = `Bearer ${this.token!}`
+        return { success: true, data: response.data }
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error && 'response' in error
+          ? (error as any).response?.data?.message || 'Admin login failed'
+          : 'Admin login failed'
+        return { success: false, error: errorMessage }
+      } finally {
+        this.loading = false
+      }
+    },
+    
     async register(userData: Record<string, any>) {
       this.loading = true
       try {
@@ -80,6 +99,25 @@ export const useAuthStore = defineStore('auth', {
         const errorMessage = error instanceof Error && 'response' in error
           ? (error as any).response?.data?.errors || 'Registration failed'
           : 'Registration failed'
+        return { success: false, error: errorMessage }
+      } finally {
+        this.loading = false
+      }
+    },
+    
+    async adminRegister(userData: Record<string, any>) {
+      this.loading = true
+      try {
+        const response = await axios.post('/admin/register', userData)
+        this.token = response.data.token
+        this.user = response.data.user
+        localStorage.setItem('token', this.token!)
+        axios.defaults.headers.common['Authorization'] = `Bearer ${this.token!}`
+        return { success: true, data: response.data }
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error && 'response' in error
+          ? (error as any).response?.data?.errors || 'Admin registration failed'
+          : 'Admin registration failed'
         return { success: false, error: errorMessage }
       } finally {
         this.loading = false
