@@ -52,104 +52,13 @@
         </div>
 
         <div v-else class="wishlist-grid">
-          <article
-            v-for="item in wishlistCards"
-            :key="item.productId"
-            class="wishlist-card"
-          >
-            <template v-if="item.product">
-              <div class="product-image-wrap">
-                <router-link :to="productLink(item.product)" class="product-image-link">
-                  <img
-                    :src="productImageSrc(item.product)"
-                    :alt="item.product.name"
-                    class="product-image"
-                    @error="setImageFallback($event, item.product.name)"
-                  />
-                </router-link>
-                <button
-                  class="favorite-float-btn active"
-                  @click="removeFromWishlist(item.productId)"
-                  :title="t('wishlist.remove')"
-                  :aria-label="t('wishlist.remove')"
-                >
-                  <i class="fas fa-heart"></i>
-                </button>
-              </div>
-
-              <div class="product-info">
-                <span class="product-category">{{ item.product.category?.name || t('wishlist.skincare') }}</span>
-                <h2 class="product-name">
-                  <router-link :to="productLink(item.product)">{{ item.product.name }}</router-link>
-                </h2>
-                <p class="product-desc">{{ item.product.description || t('wishlist.skincareFavorite') }}</p>
-
-                <div class="product-footer">
-                  <span class="product-price">{{ formatPrice(item.product.price) }}</span>
-                </div>
-
-                <div class="product-card-buttons">
-                  <button
-                    class="wishlist-action-btn wishlist-cart-btn"
-                    @click="addToCart(item.product)"
-                    :disabled="item.product.stock === 0"
-                  >
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>{{ item.product.stock === 0 ? t('wishlist.out') : t('wishlist.cart') }}</span>
-                  </button>
-                  <button
-                    class="wishlist-action-btn wishlist-saved-btn active"
-                    @click="removeFromWishlist(item.productId)"
-                  >
-                    <i class="fas fa-heart"></i>
-                    <span>{{ t('wishlist.saved') }}</span>
-                  </button>
-                </div>
-              </div>
-            </template>
-
-            <template v-else>
-              <div class="product-image-wrap">
-                <img
-                  :src="placeholderImage(t('products.skincare'))"
-                  :alt="t('wishlist.productUnavailable')"
-                  class="product-image"
-                />
-                <button
-                  class="favorite-float-btn active"
-                  @click="removeFromWishlist(item.productId)"
-                  :title="t('wishlist.remove')"
-                  :aria-label="t('wishlist.remove')"
-                >
-                  <i class="fas fa-heart"></i>
-                </button>
-              </div>
-
-              <div class="product-info">
-                <span class="product-category">{{ t('wishlist.skincare') }}</span>
-                <h2 class="product-name">{{ t('wishlist.loadingProduct') }}</h2>
-                <p class="product-desc">{{ t('wishlist.loadError') }}</p>
-
-                <div class="product-footer">
-                  <span class="product-price">0.00</span>
-                </div>
-
-                <div class="product-card-buttons">
-                  <button class="wishlist-action-btn wishlist-cart-btn" disabled>
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>{{ t('wishlist.cart') }}</span>
-                  </button>
-                  <button
-                    class="wishlist-action-btn wishlist-saved-btn active"
-                    @click="removeFromWishlist(item.productId)"
-                  >
-                    <i class="fas fa-heart"></i>
-                    <span>{{ t('wishlist.saved') }}</span>
-                  </button>
-                </div>
-              </div>
-            </template>
-          </article>
+          <template v-for="item in wishlistCards" :key="item.productId">
+            <ProductCard
+              v-if="item.product"
+              :product="item.product"
+              wishlistMode
+            />
+          </template>
         </div>
       </div>
     </section>
@@ -158,24 +67,20 @@
 
 <script>
 import axios from 'axios'
-import { useCartStore } from '../stores/cart'
 import { useWishlistStore } from '../stores/wishlist'
 import { useTranslation } from '../composables/useTranslation'
+import ProductCard from '../components/products/ProductCard.vue'
 
 export default {
   name: 'Wishlist',
+  components: { ProductCard },
   data() {
     return {
-      API_URL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
       isLoading: true,
       enrichingProducts: false
     }
   },
   computed: {
-    assetBaseUrl() {
-      return this.API_URL.replace(/\/api\/?$/, '')
-    },
-
     wishlistCards() {
       return this.wishlistStore.items
         .map((item) => {
@@ -191,10 +96,9 @@ export default {
     }
   },
   setup() {
-    const cartStore = useCartStore()
     const wishlistStore = useWishlistStore()
     const { t } = useTranslation()
-    return { cartStore, wishlistStore, t }
+    return { wishlistStore, t }
   },
   async mounted() {
     this.wishlistStore.hydrateFromLocalStorage()
@@ -245,59 +149,6 @@ export default {
         console.error('Failed to enrich wishlist products:', error)
       } finally {
         this.enrichingProducts = false
-      }
-    },
-
-    productLink(product) {
-      if (!product) return '/products'
-      return `/products/${product.slug || product.id}`
-    },
-
-    productImageSrc(product) {
-      if (!product) return this.placeholderImage('Product')
-
-      if (product.image_url) {
-        return product.image_url
-      }
-
-      if (product.image) {
-        if (/^(https?:)?\/\//.test(product.image) || product.image.startsWith('data:')) {
-          return product.image
-        }
-
-        const imagePath = product.image.startsWith('/') ? product.image : `/storage/${product.image}`
-        return `${this.assetBaseUrl}${imagePath}`
-      }
-
-      return this.placeholderImage(product.name)
-    },
-
-    placeholderImage(name = 'Product') {
-      const label = encodeURIComponent(name)
-      return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23fdf2f6'/%3E%3Ccircle cx='300' cy='230' r='96' fill='%23f0e0e6'/%3E%3Cpath d='M164 430c24-86 88-130 136-130s112 44 136 130' fill='%23e7d3dc'/%3E%3Ctext x='300' y='520' text-anchor='middle' font-family='Arial, sans-serif' font-size='34' font-weight='700' fill='%23667eea'%3E${label}%3C/text%3E%3C/svg%3E`
-    },
-
-    setImageFallback(event, name) {
-      event.target.src = this.placeholderImage(name)
-    },
-
-    formatPrice(price) {
-      return Number(price || 0).toFixed(2)
-    },
-
-    async addToCart(product) {
-      const result = await this.cartStore.addToCart(product)
-      if (!result.success) {
-        console.error(result.error || 'Failed to add to cart')
-        return
-      }
-      this.$router.push('/cart')
-    },
-
-    async removeFromWishlist(productId) {
-      const result = await this.wishlistStore.removeFromWishlist(productId)
-      if (!result.success) {
-        console.error(result.error || 'Failed to remove from wishlist')
       }
     }
   }
@@ -389,9 +240,8 @@ export default {
 
 .skeleton-grid-wishlist {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(172px, 172px));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 24px;
-  justify-content: start;
 }
 
 .skeleton-wishlist-card {
@@ -472,193 +322,8 @@ export default {
 
 .wishlist-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(172px, 172px));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 24px;
-  justify-content: start;
-}
-
-.wishlist-card {
-  background: #ffffff;
-  border: 1px solid #f0e0e6;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(180, 120, 140, 0.08);
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.wishlist-card:hover {
-  transform: translateY(-4px);
-  border-color: #d0b8c4;
-  box-shadow: 0 10px 26px rgba(180, 120, 140, 0.14);
-}
-
-.product-image-wrap {
-  position: relative;
-  aspect-ratio: 1;
-  overflow: hidden;
-  background: #fdf2f6;
-}
-
-.product-image-link {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.product-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.5s ease;
-}
-
-.wishlist-card:hover .product-image {
-  transform: scale(1.06);
-}
-
-.favorite-float-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #d6336c;
-  border-radius: 8px;
-  background: #d6336c;
-  color: #ffffff;
-  cursor: pointer;
-  font-size: 12px;
-  transition: transform 0.2s ease, background-color 0.2s ease;
-}
-
-.favorite-float-btn:hover {
-  transform: scale(1.06);
-  background: #b42354;
-}
-
-.product-info {
-  padding: 12px 12px 14px;
-}
-
-.product-category {
-  display: inline-block;
-  margin-bottom: 5px;
-  color: #667eea;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
-.product-name {
-  margin: 0 0 4px;
-  min-height: 20px;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.35;
-}
-
-.product-name a {
-  color: #2c3e50;
-  text-decoration: none;
-}
-
-.product-name a:hover {
-  color: #667eea;
-}
-
-.product-desc {
-  margin: 0 0 12px;
-  min-height: 18px;
-  color: #8a7a82;
-  font-size: 11px;
-  line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.product-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 10px;
-  border-top: 1px solid #f0e0e6;
-}
-
-.product-price {
-  color: #2c3e50;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: 0;
-}
-
-.product-price::before {
-  content: '$';
-  margin-right: 1px;
-  color: #667eea;
-  font-weight: 600;
-}
-
-.product-card-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.wishlist-action-btn {
-  appearance: none;
-  -webkit-appearance: none;
-  min-width: 0;
-  min-height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 0 8px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-}
-
-.wishlist-cart-btn {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.24);
-}
-
-.wishlist-saved-btn {
-  background: #fff7fa;
-  border-color: #d6336c;
-  color: #b42354;
-}
-
-.wishlist-action-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-}
-
-.wishlist-cart-btn:hover:not(:disabled) {
-  box-shadow: 0 4px 14px rgba(102, 126, 234, 0.35);
-}
-
-.wishlist-saved-btn:hover {
-  background: #fce4ec;
-}
-
-.wishlist-action-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
 }
 
 @media (max-width: 768px) {
@@ -674,10 +339,6 @@ export default {
   .wishlist-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 14px;
-  }
-
-  .product-card-buttons {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
