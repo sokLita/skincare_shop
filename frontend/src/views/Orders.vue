@@ -48,9 +48,14 @@
 
                 <span class="order-date">{{ new Date(order.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</span>
               </div>
-              <span class="order-status" :class="'status-' + order.status">
-                {{ order.status }}
-              </span>
+              <div class="order-status-group">
+                <span class="order-status" :class="'status-' + order.status">
+                  {{ order.status }}
+                </span>
+                <button class="track-btn" @click="openChatWithOrder(order.id)" title="Check with Order Assistant">
+                  <i class="fas fa-robot"></i>
+                </button>
+              </div>
             </div>
 
             <!-- Order Items -->
@@ -174,7 +179,13 @@ export default {
         this.loading = false
       }
     },
-    
+
+    openChatWithOrder(orderId) {
+      // Dispatch event that App.vue listens for to open the chatbot with this order
+      window.dispatchEvent(new CustomEvent('open-order-chat', { detail: { orderId } }))
+      // Scroll to bottom right to show the chatbot
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+    }
   }
 }
 </script>
@@ -331,6 +342,12 @@ export default {
   color: #8a7a82;
 }
 
+.order-status-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .order-status {
   display: inline-flex;
   align-items: center;
@@ -340,6 +357,28 @@ export default {
   font-weight: 600;
   text-transform: capitalize;
   letter-spacing: 0.3px;
+}
+
+.track-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid #f0e0e6;
+  background: #ffffff;
+  color: #b8456a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+.track-btn:hover {
+  background: #fdf2f6;
+  border-color: #b8456a;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(184, 69, 106, 0.15);
 }
 
 .status-pending {

@@ -10,6 +10,7 @@
     </main>
     <Footer />
     <ToastContainer />
+    <OrderChatbotWidget :preselectedOrderId="preselectedOrderId" />
   </div>
 </template>
 
@@ -17,6 +18,7 @@
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
 import ToastContainer from './components/ui/ToastContainer.vue'
+import OrderChatbotWidget from './components/chat/OrderChatbotWidget.vue'
 import { useAuthStore } from './stores/auth'
 import { useDarkMode } from './composables/useDarkMode'
 import { useLanguageStore } from './stores/language'
@@ -26,7 +28,13 @@ export default {
   components: {
     Navbar,
     Footer,
-    ToastContainer
+    ToastContainer,
+    OrderChatbotWidget
+  },
+  data() {
+    return {
+      preselectedOrderId: null
+    }
   },
   mounted() {
     const authStore = useAuthStore()
@@ -40,6 +48,11 @@ export default {
     // Initialize language
     const languageStore = useLanguageStore()
     languageStore.initLocale()
+
+    // Listen for chatbot open events
+    window.addEventListener('open-order-chat', (e) => {
+      this.preselectedOrderId = e.detail?.orderId || null
+    })
   }
 }
 </script>
