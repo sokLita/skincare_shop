@@ -51,7 +51,7 @@ export const useAuthStore = defineStore('auth', {
     async login(email: string, password: string) {
       this.loading = true
       try {
-        const response = await axios.post('/login', { email, password })
+const response = await axios.post('/login', { email, password })
         this.token = response.data.token
         this.user = response.data.user
         localStorage.setItem('token', this.token!)
@@ -70,7 +70,7 @@ export const useAuthStore = defineStore('auth', {
     async adminLogin(email: string, password: string) {
       this.loading = true
       try {
-        const response = await axios.post('/admin/login', { email, password })
+const response = await axios.post('/admin/login', { email, password })
         this.token = response.data.token
         this.user = response.data.user
         localStorage.setItem('token', this.token!)
